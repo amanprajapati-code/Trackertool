@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F7F8FA;--surface:#FFFFFF;--surface2:#F2F4F7;--text:#101828;--text2:#667085;--text3:#98A2B3;--border:#E4E7EC;--accent:#C96A00;--accent-bg:#FFF4E8;--success:#087443;--font:'Geist',system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0F1115;--surface:#151922;--surface2:#1B2029;--text:#F2F4F7;--text2:#98A2B3;--text3:#667085;--border:#2A303B;--accent:#F0A23B;--accent-bg:rgba(240,162,59,0.1)}}
+html{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
+.landing{max-width:480px;text-align:center;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.logo{width:48px;height:48px;border-radius:12px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;margin-bottom:32px}
+.logo svg{width:24px;height:24px;fill:#fff}
+h1{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;line-height:1.2}
+.subtitle{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:40px;max-width:360px;margin-left:auto;margin-right:auto}
+.cta{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:15px;font-weight:600;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;text-decoration:none;transition:all .2s ease}
+.cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.cta:active{transform:translateY(0)}
+.cta svg{width:16px;height:16px;fill:#fff}
+.meta{margin-top:48px;font-size:12px;color:var(--text3);letter-spacing:.3px}
+</style>
+</head>
+<body>
+<div class="landing">
+<div class="logo"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+<h1>Student Command Center</h1>
+<p class="subtitle">Your personal academic productivity system. Manage your timetable, attendance, tasks, exams, and more — all in one place.</p>
+<a href="app.html" class="cta">Open Command Center <svg viewBox="0 0 24 24"><path d="M10 6l6 6-6 6" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+<p class="meta">All data stored locally on your device</p>
+</div>
+</body>
+</html>
