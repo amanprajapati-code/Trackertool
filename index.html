@@ -6,7 +6,7 @@
 <title>TICICTRACKER — Your Academic Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   /* ---- Design tokens : "TICICTRACKER" — liquid glass over deep water ---- */
@@ -27,7 +27,7 @@
   --radius-lg:26px;
   --radius-md:18px;
   --radius-sm:12px;
-  --display:'Space Grotesk', sans-serif;
+  --display:'Outfit', 'Inter', sans-serif;
   --body:'Inter', sans-serif;
   --mono:'JetBrains Mono', monospace;
 }
@@ -35,12 +35,16 @@
 html,body{height:100%;}
 body{
   font-family:var(--body);
+  font-weight:400;
   color:var(--text-1);
   background:var(--abyss);
   min-height:100vh;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
 }
+p, span, div, li, label{ font-weight:400; }
 
 /* ---------- ambient liquid background ---------- */
 .tide-bg{
@@ -94,10 +98,10 @@ body{
 }
 
 /* ---------- typography ---------- */
-h1,h2,h3{font-family:var(--display); letter-spacing:-0.02em; font-weight:600;}
+h1,h2,h3{font-family:var(--display); letter-spacing:-0.01em; font-weight:700; line-height:1.15;}
 .eyebrow{
   font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-  color:var(--signal-soft); opacity:0.85;
+  color:var(--signal-soft); opacity:0.9; font-weight:600;
 }
 .text-2{color:var(--text-2);}
 .text-3{color:var(--text-3);}
@@ -203,6 +207,19 @@ label{font-size:12.5px; color:var(--text-2); font-weight:600; margin-bottom:6px;
 @keyframes shimmer{
   0%{filter:brightness(1);} 50%{filter:brightness(1.18);} 100%{filter:brightness(1);}
 }
+
+/* ---------- time picker (hour / minute / am-pm dropdowns) ---------- */
+.time-picker{
+  display:flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);
+  border-radius:12px; padding:4px 8px;
+}
+.time-picker select{
+  background:transparent; border:none; color:var(--text-1); font-family:var(--mono);
+  font-size:14.5px; padding:9px 4px; outline:none; flex:1; min-width:0;
+}
+.time-picker select:focus{background:rgba(255,255,255,0.06); border-radius:8px;}
+.time-picker option{background:#0d1730; color:var(--text-1);}
 
 /* ---------- modal ---------- */
 .modal-overlay{

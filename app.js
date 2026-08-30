@@ -36,6 +36,34 @@ if (configured) {
 
 function pad(n) { return n.toString().padStart(2, "0"); }
 function timeToMinutes(t) { const [h, m] = t.split(":").map(Number); return h * 60 + m; }
+
+// ---------- reliable time picker (hour / minute / AM-PM dropdowns) ----------
+// Native <input type="time"> renders inconsistently across Android browsers/locales,
+// so time is entered explicitly via three selects and combined into 24h "HH:MM".
+function timePickerHTML(prefix, defHour24 = 9, defMinute = 0) {
+  const defHour12 = defHour24 % 12 === 0 ? 12 : defHour24 % 12;
+  const defAmPm = defHour24 >= 12 ? "PM" : "AM";
+  const hourOpts = Array.from({ length: 12 }, (_, i) => i + 1)
+    .map(h => `<option value="${h}" ${h === defHour12 ? "selected" : ""}>${h}</option>`).join("");
+  const minOpts = Array.from({ length: 12 }, (_, i) => i * 5)
+    .map(m => `<option value="${m}" ${m === defMinute ? "selected" : ""}>${pad(m)}</option>`).join("");
+  const ampmOpts = ["AM", "PM"].map(a => `<option value="${a}" ${a === defAmPm ? "selected" : ""}>${a}</option>`).join("");
+  return `
+    <div class="time-picker">
+      <select id="${prefix}Hour">${hourOpts}</select>
+      <span class="text-3">:</span>
+      <select id="${prefix}Min">${minOpts}</select>
+      <select id="${prefix}AmPm">${ampmOpts}</select>
+    </div>`;
+}
+function timePickerValue(prefix) {
+  const h12 = +document.getElementById(prefix + "Hour").value;
+  const min = +document.getElementById(prefix + "Min").value;
+  const ampm = document.getElementById(prefix + "AmPm").value;
+  let h24 = h12 % 12;
+  if (ampm === "PM") h24 += 12;
+  return `${pad(h24)}:${pad(min)}`;
+}
 function minutesToLabel(mins) {
   const h = Math.floor(mins / 60), m = mins % 60;
   const ap = h >= 12 ? "PM" : "AM";
@@ -319,11 +347,11 @@ function renderOnboardStep2() {
       <div class="row gap-12" style="margin-bottom:14px;">
         <div class="field" style="flex:1; margin-bottom:0;">
           <label>Start time</label>
-          <input type="time" id="slotStart" value="09:00">
+          ${timePickerHTML("slotStart", 9, 0)}
         </div>
         <div class="field" style="flex:1; margin-bottom:0;">
           <label>End time</label>
-          <input type="time" id="slotEnd" value="09:50">
+          ${timePickerHTML("slotEnd", 9, 50)}
         </div>
       </div>
       <button class="btn btn-ghost btn-block" id="addSlotBtn">+ Add this time slot</button>
@@ -341,10 +369,9 @@ function renderOnboardStep2() {
 
   document.getElementById("addSlotBtn").onclick = () => {
     const day = +document.getElementById("slotDay").value;
-    const start = document.getElementById("slotStart").value;
-    const end = document.getElementById("slotEnd").value;
+    const start = timePickerValue("slotStart");
+    const end = timePickerValue("slotEnd");
     const room = document.getElementById("slotRoom").value.trim();
-    if (!start || !end) { toast("Set start & end time", "error"); return; }
     if (timeToMinutes(end) <= timeToMinutes(start)) { toast("End time must be after start time", "error"); return; }
     subj.slots.push({ day, start, end, room });
     renderOnboardStep2();
@@ -922,8 +949,8 @@ function openAddSlotModal() {
           <div class="field" style="flex:1;"><label>Room (optional)</label><input type="text" id="mSlotRoom"></div>
         </div>
         <div class="row gap-12">
-          <div class="field" style="flex:1;"><label>Start</label><input type="time" id="mSlotStart" value="09:00"></div>
-          <div class="field" style="flex:1;"><label>End</label><input type="time" id="mSlotEnd" value="09:50"></div>
+          <div class="field" style="flex:1;"><label>Start</label>${timePickerHTML("mSlotStart", 9, 0)}</div>
+          <div class="field" style="flex:1;"><label>End</label>${timePickerHTML("mSlotEnd", 9, 50)}</div>
         </div>
         <div class="row gap-12" style="margin-top:6px;">
           <button class="btn btn-ghost btn-block" id="cancelM2">Cancel</button>
@@ -937,8 +964,8 @@ function openAddSlotModal() {
     const subject_id = document.getElementById("mSlotSubj").value;
     const day_of_week = +document.getElementById("mSlotDay").value;
     const room = document.getElementById("mSlotRoom").value.trim() || null;
-    const start_time = document.getElementById("mSlotStart").value;
-    const end_time = document.getElementById("mSlotEnd").value;
+    const start_time = timePickerValue("mSlotStart");
+    const end_time = timePickerValue("mSlotEnd");
     if (timeToMinutes(end_time) <= timeToMinutes(start_time)) { toast("End time must be after start", "error"); return; }
     const uid = state.session.user.id;
     const { data, error } = await supabase.from("schedule_slots").insert({ user_id: uid, subject_id, day_of_week, start_time, end_time, room }).select().single();
