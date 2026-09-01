@@ -2,240 +2,2338 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>TICICTRACKER — Your Academic Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Student Command Center</title>
+<meta name="description" content="A personal academic operating system for tracking classes, attendance, tasks, study time and exams.">
+<meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1115" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Command Center">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.0.3/index.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+/* ============================================================
+   TOKENS — glass / Material You inspired
+   ============================================================ */
 :root{
-  /* ---- Design tokens : "TICICTRACKER" — liquid glass over deep water ---- */
-  --abyss:#060a14;
-  --deep-tide:#0d1730;
-  --deep-tide-2:#0a1226;
-  --glass:rgba(255,255,255,0.06);
-  --glass-strong:rgba(255,255,255,0.10);
-  --glass-border:rgba(255,255,255,0.14);
-  --signal:#4da3ff;
-  --signal-soft:#8fc4ff;
-  --foam:#5fe1c0;
-  --coral:#ff6b6b;
-  --amber:#ffc85c;
-  --text-1:#f5f7fa;
-  --text-2:#9aa7bd;
-  --text-3:#5f6b80;
-  --radius-lg:26px;
-  --radius-md:18px;
-  --radius-sm:12px;
-  --display:'Outfit', 'Inter', sans-serif;
-  --body:'Inter', sans-serif;
-  --mono:'JetBrains Mono', monospace;
+  --bg:#F8F9FC;
+  --bg-glow: radial-gradient(circle at 12% 8%, rgba(103,80,164,.10) 0%, transparent 42%),
+             radial-gradient(circle at 88% 92%, rgba(103,80,164,.06) 0%, transparent 40%);
+  --surface: rgba(255,255,255,.72);
+  --surface-solid:#FFFFFF;
+  --surface-2: rgba(255,255,255,.5);
+  --text:#1A1C1E;
+  --text-2:#5B5766;
+  --text-muted:#8A8794;
+  --border: rgba(20,15,35,.09);
+  --border-soft: rgba(20,15,35,.055);
+  --accent:#6750A4;
+  --accent-2:#7F67BE;
+  --accent-subtle: rgba(103,80,164,.10);
+  --accent-text:#5B3FA0;
+  --success:#0F7A4A;
+  --success-bg: rgba(15,122,74,.10);
+  --warning:#9A6300;
+  --warning-bg: rgba(154,99,0,.10);
+  --danger:#B3261E;
+  --danger-bg: rgba(179,38,30,.09);
+  --info:#1D5FD3;
+  --info-bg: rgba(29,95,211,.09);
+  --glow-accent: 0 2px 18px rgba(103,80,164,.18);
+  --shadow-sm: 0 1px 2px rgba(30,20,50,.05);
+  --shadow-md: 0 8px 28px rgba(40,25,70,.09);
+  --blur: 18px;
+
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px;
+  --sp-6:24px; --sp-8:32px; --sp-10:40px; --sp-12:48px;
+  --radius-card:16px; --radius-sm:10px; --radius-pill:999px;
+  --sidebar-w:256px;
+  --font-display:'Playfair Display', 'Geist', serif;
+  --font-mono:'JetBrains Mono', ui-monospace, monospace;
+  color-scheme: light;
 }
-*{box-sizing:border-box; margin:0; padding:0;}
-html,body{height:100%;}
+[data-theme="dark"]{
+  --bg:#0E0D13;
+  --bg-glow: radial-gradient(circle at 12% 8%, rgba(208,188,255,.10) 0%, transparent 42%),
+             radial-gradient(circle at 88% 92%, rgba(208,188,255,.06) 0%, transparent 40%);
+  --surface: rgba(28,25,38,.62);
+  --surface-solid:#17151F;
+  --surface-2: rgba(38,34,50,.55);
+  --text:#EDE9F5;
+  --text-2:#B2ACC2;
+  --text-muted:#736D85;
+  --border: rgba(220,210,255,.10);
+  --border-soft: rgba(220,210,255,.06);
+  --accent:#D0BCFF;
+  --accent-2:#B69DF8;
+  --accent-subtle: rgba(208,188,255,.14);
+  --accent-text:#D0BCFF;
+  --success:#4ADE9A;
+  --success-bg: rgba(74,222,154,.12);
+  --warning:#F2C14E;
+  --warning-bg: rgba(242,193,78,.12);
+  --danger:#F1897E;
+  --danger-bg: rgba(241,137,126,.12);
+  --info:#8AB4F8;
+  --info-bg: rgba(138,180,248,.12);
+  --glow-accent: 0 2px 22px rgba(208,188,255,.22);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 10px 32px rgba(0,0,0,.42);
+  color-scheme: dark;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
 body{
-  font-family:var(--body);
-  font-weight:400;
-  color:var(--text-1);
-  background:var(--abyss);
-  min-height:100vh;
-  overflow-x:hidden;
+  margin:0;
+  background:var(--bg);
+  background-image:var(--bg-glow);
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:'Geist','Geist Sans','Inter',system-ui,-apple-system,sans-serif;
+  font-size:14px;
+  line-height:1.5;
   -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  text-rendering:optimizeLegibility;
+  transition:background .18s ease, color .18s ease;
 }
-p, span, div, li, label{ font-weight:400; }
-
-/* ---------- ambient liquid background ---------- */
-.tide-bg{
-  position:fixed; inset:0; z-index:0; overflow:hidden;
-  background:
-    radial-gradient(1200px 800px at 15% -10%, #123058 0%, transparent 60%),
-    radial-gradient(1000px 700px at 110% 10%, #0f2a4a 0%, transparent 55%),
-    linear-gradient(180deg, var(--abyss) 0%, var(--deep-tide-2) 55%, var(--abyss) 100%);
-}
-.blob{
-  position:absolute; border-radius:50%;
-  filter:blur(70px); opacity:0.5;
-  animation:drift 22s ease-in-out infinite alternate;
-}
-.blob.b1{width:520px;height:520px; background:radial-gradient(circle,#1a4d7a,transparent 70%); top:-10%; left:-10%;}
-.blob.b2{width:460px;height:460px; background:radial-gradient(circle,#0d3d3a,transparent 70%); bottom:-15%; right:-5%; animation-delay:-9s;}
-.blob.b3{width:380px;height:380px; background:radial-gradient(circle,#132a52,transparent 70%); top:40%; left:60%; animation-delay:-15s;}
-@keyframes drift{
-  0%{ transform:translate(0,0) scale(1); }
-  100%{ transform:translate(40px,-30px) scale(1.08); }
-}
+h1,h2,h3,p,ul,ol,fieldset{ margin:0; padding:0; }
+ul{ list-style:none; }
+button{ font-family:inherit; }
+a{ color:inherit; text-decoration:none; }
+button, input, select, textarea{ font-size:14px; color:inherit; }
+::selection{ background:var(--accent-subtle); color:var(--accent-text); }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
 @media (prefers-reduced-motion: reduce){
-  .blob{animation:none;}
+  *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
+::-webkit-scrollbar{ width:6px; height:6px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:var(--border); border-radius:99px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--text-muted); }
+
+.icon{
+  font-family:'Material Symbols Outlined';
+  font-weight:normal; font-style:normal;
+  font-size:19px; line-height:1; display:inline-flex; flex-shrink:0;
+  align-items:center; justify-content:center;
+  -webkit-font-smoothing:antialiased;
+  font-variation-settings:'FILL' 0,'wght' 340,'GRAD' 0,'opsz' 22;
+  user-select:none;
+}
+.icon-sm{ font-size:15px; }
+.icon-lg{ font-size:24px; }
+
+.text-glow{ text-shadow:0 2px 14px rgba(103,80,164,.16); }
+[data-theme="dark"] .text-glow{ text-shadow:0 2px 16px rgba(208,188,255,.16); }
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+.shell{ display:flex; min-height:100vh; }
+
+.sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  border-right:1px solid var(--border);
+  background:var(--surface);
+  backdrop-filter:blur(var(--blur));
+  -webkit-backdrop-filter:blur(var(--blur));
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0; left:0; bottom:0;
+  padding:var(--sp-6) var(--sp-4);
+  overflow-y:auto;
+  z-index:40;
+}
+.brand{
+  display:flex; align-items:center; gap:var(--sp-2);
+  padding:0 var(--sp-2);
+  margin-bottom:var(--sp-8);
+}
+.brand-mark{
+  width:34px; height:34px; border-radius:12px;
+  background:var(--accent-subtle); color:var(--accent-text);
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:13px; flex-shrink:0;
+  box-shadow:var(--glow-accent);
+}
+.brand-name{ font-family:var(--font-display); font-weight:600; font-size:15.5px; letter-spacing:-.005em; }
+.brand-sub{ font-size:11px; color:var(--text-muted); margin-top:-1px; }
+
+.nav-list{ display:flex; flex-direction:column; gap:2px; flex:1; }
+.nav-item{
+  display:flex; align-items:center; gap:var(--sp-3);
+  padding:9px var(--sp-3);
+  border-radius:var(--radius-sm);
+  color:var(--text-2);
+  font-size:13.5px; font-weight:500;
+  cursor:pointer;
+  border:1px solid transparent;
+  transition:background .16s ease, color .16s ease, border-color .16s ease;
+}
+.nav-item:hover{ background:var(--surface-2); color:var(--text); }
+.nav-item.active{ background:var(--accent-subtle); color:var(--accent-text); font-weight:650; border-color:var(--border); box-shadow:var(--shadow-sm); }
+.nav-foot{ padding-top:var(--sp-4); border-top:1px solid var(--border); margin-top:var(--sp-4); }
+
+.main{
+  flex:1;
+  margin-left:var(--sidebar-w);
+  min-width:0;
+  padding:var(--sp-8) var(--sp-10) var(--sp-12);
 }
 
-/* ---------- layout shell ---------- */
-#app{position:relative; z-index:1; min-height:100vh;}
-.screen{display:none; min-height:100vh;}
-.screen.active{display:block;}
+.topbar-mobile{ display:none; }
+.bottom-nav{ display:none; }
 
-.center-stage{
-  min-height:100vh; display:flex; align-items:center; justify-content:center;
-  padding:24px;
-}
+/* ============================================================
+   PRIMITIVES
+   ============================================================ */
+.page-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:var(--sp-4); margin-bottom:var(--sp-8); flex-wrap:wrap; }
+.page-title{ font-family:var(--font-display); font-size:28px; font-weight:600; letter-spacing:-.01em; }
+.page-sub{ color:var(--text-2); font-size:13.5px; margin-top:4px; }
+.section-title{ font-family:var(--font-display); font-size:17px; font-weight:600; letter-spacing:-.005em; }
+.eyebrow{ font-size:11.5px; font-weight:650; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-text); }
 
-/* ---------- glass card ---------- */
-.glass{
-  background:var(--glass);
-  border:1px solid var(--glass-border);
-  border-radius:var(--radius-lg);
-  backdrop-filter:blur(24px) saturate(140%);
-  -webkit-backdrop-filter:blur(24px) saturate(140%);
-  box-shadow:0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+.card{
+  background:var(--surface);
+  backdrop-filter:blur(var(--blur));
+  -webkit-backdrop-filter:blur(var(--blur));
+  border:1px solid var(--border);
+  border-radius:var(--radius-card);
+  padding:var(--sp-5);
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow .2s ease, border-color .2s ease;
 }
-.glass-sm{
-  background:var(--glass);
-  border:1px solid var(--glass-border);
-  border-radius:var(--radius-md);
-  backdrop-filter:blur(18px) saturate(140%);
-  -webkit-backdrop-filter:blur(18px) saturate(140%);
-}
+.card-flat{ background:transparent; border:none; padding:0; box-shadow:none; backdrop-filter:none; }
+.grid{ display:grid; gap:var(--sp-4); }
+.row{ display:flex; align-items:center; gap:var(--sp-3); }
+.stack{ display:flex; flex-direction:column; gap:var(--sp-2); }
+.spread{ display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); }
 
-/* ---------- typography ---------- */
-h1,h2,h3{font-family:var(--display); letter-spacing:-0.01em; font-weight:700; line-height:1.15;}
-.eyebrow{
-  font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-  color:var(--signal-soft); opacity:0.9; font-weight:600;
-}
-.text-2{color:var(--text-2);}
-.text-3{color:var(--text-3);}
-.mono{font-family:var(--mono);}
-
-/* ---------- buttons & inputs ---------- */
 .btn{
-  font-family:var(--body); font-weight:600; font-size:14.5px;
-  padding:13px 22px; border-radius:14px; border:none; cursor:pointer;
-  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  border-radius:11px; border:1px solid transparent;
+  padding:9px 14px; font-size:13.5px; font-weight:600;
+  cursor:pointer; transition:background .15s ease, border-color .15s ease, opacity .15s ease, transform .1s ease, box-shadow .15s ease;
+  white-space:nowrap;
 }
-.btn:active{transform:scale(0.97);}
-.btn-primary{
-  background:linear-gradient(135deg, var(--signal), #2f7dd6);
-  color:#04121f;
-  box-shadow:0 6px 20px rgba(77,163,255,0.35);
+.btn:active{ transform:scale(.98); }
+.btn-primary{ background:var(--accent); color:#fff; box-shadow:var(--glow-accent); }
+.btn-primary:hover{ opacity:.92; }
+.btn-secondary{ background:var(--surface); backdrop-filter:blur(var(--blur)); border-color:var(--border); color:var(--text); }
+.btn-secondary:hover{ background:var(--surface-2); }
+.btn-ghost{ background:transparent; color:var(--text-2); }
+.btn-ghost:hover{ background:var(--surface-2); color:var(--text); }
+.btn-danger{ background:transparent; color:var(--danger); }
+.btn-danger:hover{ background:var(--danger-bg); }
+.btn-sm{ padding:6px 10px; font-size:12.5px; border-radius:7px; }
+.btn-icon{ padding:8px; border-radius:8px; }
+.btn-block{ width:100%; }
+.btn[disabled]{ opacity:.45; cursor:not-allowed; }
+
+.badge{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; font-weight:700; letter-spacing:.04em;
+  padding:3px 9px; border-radius:var(--radius-pill);
+  border:1px solid transparent;
 }
-.btn-primary:hover{box-shadow:0 8px 26px rgba(77,163,255,0.5);}
-.btn-ghost{
-  background:var(--glass-strong); color:var(--text-1); border:1px solid var(--glass-border);
+.badge-accent{ background:var(--accent-subtle); color:var(--accent-text); border-color:rgba(103,80,164,.18); }
+.badge-success{ background:var(--success-bg); color:var(--success); border-color:rgba(15,122,74,.18); }
+.badge-warning{ background:var(--warning-bg); color:var(--warning); border-color:rgba(154,99,0,.18); }
+.badge-danger{ background:var(--danger-bg); color:var(--danger); border-color:rgba(179,38,30,.18); }
+.badge-info{ background:var(--info-bg); color:var(--info); border-color:rgba(29,95,211,.18); }
+.badge-neutral{ background:var(--surface-2); color:var(--text-2); border-color:var(--border); }
+
+.divider{ height:1px; background:var(--border); border:none; margin:var(--sp-4) 0; }
+
+.empty{
+  text-align:center;
+  padding:var(--sp-10) var(--sp-5);
+  color:var(--text-2);
 }
-.btn-ghost:hover{background:rgba(255,255,255,0.14);}
-.btn-danger{ background:rgba(255,107,107,0.15); color:var(--coral); border:1px solid rgba(255,107,107,0.3);}
-.btn-block{width:100%;}
-.btn-sm{padding:9px 14px; font-size:13px; border-radius:11px;}
-.btn:disabled{opacity:0.45; cursor:not-allowed;}
+.empty .icon-lg{ margin:0 auto var(--sp-3); color:var(--text-muted); }
+.empty-title{ font-family:var(--font-display); font-weight:600; color:var(--text); font-size:15px; margin-bottom:2px; }
+.empty-sub{ font-size:13px; color:var(--text-muted); max-width:320px; margin:2px auto 0; }
 
-input[type=text],input[type=email],input[type=password],input[type=date],input[type=time],select,textarea{
-  width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);
-  color:var(--text-1); padding:13px 15px; border-radius:12px; font-family:var(--body);
-  font-size:14.5px; outline:none; transition:border-color .15s ease, background .15s ease;
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12.5px; font-weight:600; color:var(--text-2); }
+.field input, .field select, .field textarea{
+  background:var(--surface-2);
+  backdrop-filter:blur(var(--blur));
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:9px 11px;
+  color:var(--text);
+  width:100%;
 }
-input::placeholder, textarea::placeholder{color:var(--text-3);}
-input:focus, select:focus, textarea:focus{border-color:var(--signal); background:rgba(255,255,255,0.08);}
-label{font-size:12.5px; color:var(--text-2); font-weight:600; margin-bottom:6px; display:block; letter-spacing:0.01em;}
-.field{margin-bottom:16px;}
+.field textarea{ resize:vertical; min-height:64px; font-family:inherit; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:2px solid var(--accent); outline-offset:0; border-color:transparent; }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-3); }
+.field-hint{ font-size:11.5px; color:var(--text-muted); }
 
-::selection{background:rgba(77,163,255,0.35);}
+.stat-num{ font-family:var(--font-mono); font-size:28px; font-weight:500; letter-spacing:-.01em; line-height:1.1; }
+.stat-label{ font-size:11.5px; color:var(--text-2); font-weight:600; margin-top:3px; text-transform:uppercase; letter-spacing:.03em; }
 
-/* ---------- scrollbar ---------- */
-::-webkit-scrollbar{width:6px; height:6px;}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15); border-radius:10px;}
+.list-row{
+  display:flex; align-items:center; gap:var(--sp-3);
+  padding:11px 2px;
+  border-bottom:1px solid var(--border-soft);
+}
+.list-row:last-child{ border-bottom:none; }
+.list-row-tight{ padding:9px 2px; }
 
-/* ---------- utility ---------- */
-.hidden{display:none !important;}
-.row{display:flex; align-items:center;}
-.between{justify-content:space-between;}
-.gap-8{gap:8px;} .gap-12{gap:12px;} .gap-16{gap:16px;}
-.fade-in{animation:fadeIn .5s ease both;}
-@keyframes fadeIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
-.toast-wrap{position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:999; display:flex; flex-direction:column; gap:8px; align-items:center;}
+.dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.progress-track{ height:6px; border-radius:99px; background:var(--surface-2); overflow:hidden; }
+.progress-fill{ height:100%; border-radius:99px; background:var(--accent); box-shadow:0 0 8px rgba(103,80,164,.5); transition:width .2s ease; }
+[data-theme="dark"] .progress-fill{ box-shadow:0 0 8px rgba(208,188,255,.5); }
+
+.checkbox{
+  width:20px; height:20px; border-radius:50%; border:1.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  background:var(--surface-2); transition:all .15s ease;
+}
+.checkbox.checked{ background:var(--success); border-color:var(--success); box-shadow:0 0 10px rgba(15,122,74,.4); }
+.checkbox.checked .icon{ color:#fff; }
+.checkbox .icon{ font-size:13px; opacity:0; transition:opacity .15s ease; }
+.checkbox.checked .icon{ opacity:1; }
+
+.task-title.done{ text-decoration:line-through; color:var(--text-muted); }
+
+.tabs{ display:flex; gap:2px; background:var(--surface-2); padding:3px; border-radius:12px; width:fit-content; }
+.tab{ padding:7px 13px; border-radius:9px; font-size:13px; font-weight:600; color:var(--text-2); cursor:pointer; transition:background .15s ease, color .15s ease; }
+.tab.active{ background:var(--surface-solid); color:var(--accent-text); box-shadow:var(--shadow-sm); }
+[data-theme="dark"] .tab.active{ background:rgba(255,255,255,.08); }
+
+.toast-root{ position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:400; display:flex; flex-direction:column; gap:8px; align-items:center; }
 .toast{
-  padding:12px 20px; border-radius:14px; font-size:13.5px; font-weight:600;
-  animation:toastIn .3s ease both;
+  background:var(--text); color:var(--bg); padding:9px 16px; border-radius:9px;
+  font-size:13px; font-weight:600; box-shadow:var(--shadow-md);
+  animation:toast-in .18s ease;
 }
-@keyframes toastIn{from{opacity:0; transform:translateY(-14px);} to{opacity:1; transform:translateY(0);}}
+@keyframes toast-in{ from{ opacity:0; transform:translateY(-6px);} to{ opacity:1; transform:translateY(0);} }
 
-/* ---------- liquid attendance ring ---------- */
-.ring{
-  position:relative; width:150px; height:150px; border-radius:50%;
-  overflow:hidden; flex-shrink:0;
-  border:1px solid var(--glass-border);
-  background:rgba(255,255,255,0.03);
-  box-shadow:inset 0 0 24px rgba(0,0,0,0.35);
-}
-.ring .water{
-  position:absolute; bottom:0; left:0; width:100%;
-  transition:height 1.3s cubic-bezier(.4,0,.2,1);
-  opacity:0.85;
-}
-.ring .wave{
-  position:absolute; top:-14px; left:50%; width:220%; height:34px;
-  border-radius:44%;
-  animation:spin 7s linear infinite;
-  opacity:0.9; transform-origin:center;
-}
-.ring .wave2{
-  width:240%; height:30px; top:-11px;
-  animation:spin 5s linear infinite reverse;
-  opacity:0.45;
-}
-@keyframes spin{
-  from{ transform:translate(-50%,0) rotate(0deg); }
-  to{ transform:translate(-50%,0) rotate(360deg); }
-}
-.ring-label{
-  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; z-index:2;
-  text-shadow:0 2px 10px rgba(0,0,0,0.5);
-}
-
-/* ---------- per-subject liquid bar ---------- */
-.liquid-bar{
-  height:9px; border-radius:20px; background:rgba(255,255,255,0.06);
-  overflow:hidden; position:relative;
-}
-.liquid-bar-fill{
-  height:100%; border-radius:20px; transition:width 1.1s cubic-bezier(.4,0,.2,1);
-  background-size:200% 100%;
-  animation:shimmer 3s linear infinite;
-}
-@keyframes shimmer{
-  0%{filter:brightness(1);} 50%{filter:brightness(1.18);} 100%{filter:brightness(1);}
-}
-
-/* ---------- time picker (hour / minute / am-pm dropdowns) ---------- */
-.time-picker{
-  display:flex; align-items:center; gap:6px;
-  background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);
-  border-radius:12px; padding:4px 8px;
-}
-.time-picker select{
-  background:transparent; border:none; color:var(--text-1); font-family:var(--mono);
-  font-size:14.5px; padding:9px 4px; outline:none; flex:1; min-width:0;
-}
-.time-picker select:focus{background:rgba(255,255,255,0.06); border-radius:8px;}
-.time-picker option{background:#0d1730; color:var(--text-1);}
-
-/* ---------- modal ---------- */
+/* modal */
 .modal-overlay{
-  position:fixed; inset:0; z-index:100; background:rgba(3,6,12,0.6);
-  backdrop-filter:blur(6px);
-  display:flex; align-items:center; justify-content:center; padding:20px;
-  animation:fadeIn .25s ease both;
+  position:fixed; inset:0; background:rgba(16,20,28,.44); backdrop-filter:blur(2px);
+  display:flex; align-items:flex-end; justify-content:center; z-index:300;
+  opacity:0; transition:opacity .18s ease;
 }
+.modal-overlay.show{ opacity:1; }
+.modal-panel{
+  background:var(--surface-solid); width:100%; max-width:480px; max-height:88vh; overflow-y:auto;
+  border-radius:22px 22px 0 0; padding:var(--sp-6); box-shadow:var(--shadow-md);
+  border:1px solid var(--border);
+  transform:translateY(16px); transition:transform .2s ease;
+}
+[data-theme="dark"] .modal-panel{ background:#1C1927; }
+.modal-overlay.show .modal-panel{ transform:translateY(0); }
+@media (min-width:768px){
+  .modal-overlay{ align-items:center; }
+  .modal-panel{ border-radius:20px; max-height:84vh; }
+}
+.modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp-5); }
+.modal-title{ font-family:var(--font-display); font-size:18px; font-weight:600; }
+.modal-foot{ display:flex; gap:var(--sp-2); margin-top:var(--sp-6); }
+
+/* more sheet */
+.sheet-overlay{
+  position:fixed; inset:0; background:rgba(16,10,28,.5); z-index:250; display:none;
+  align-items:flex-end; justify-content:center;
+}
+.sheet-overlay.show{ display:flex; }
+.sheet-panel{ background:var(--surface-solid); width:100%; border-radius:22px 22px 0 0; padding:var(--sp-5) var(--sp-4) var(--sp-8); border:1px solid var(--border); }
+[data-theme="dark"] .sheet-panel{ background:#1C1927; }
+.sheet-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-2); margin-top:var(--sp-4); }
+.sheet-item{ display:flex; flex-direction:column; align-items:center; gap:7px; padding:var(--sp-3) var(--sp-1); border-radius:14px; color:var(--text-2); font-size:12px; font-weight:600; }
+.sheet-item.active{ color:var(--accent-text); }
+.sheet-icon-wrap{ width:46px; height:46px; border-radius:14px; background:var(--surface-2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; }
+
+/* ============================================================
+   TODAY VIEW SPECIFICS
+   ============================================================ */
+.glance-grid{ display:grid; grid-template-columns: 1.6fr 1fr 1fr; gap:var(--sp-4); margin-bottom:var(--sp-6); }
+.glance-hero{
+  background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+  border:1px solid var(--border); border-radius:var(--radius-card); padding:var(--sp-6);
+  grid-row:span 2; display:flex; flex-direction:column; justify-content:space-between;
+  box-shadow:var(--shadow-sm);
+}
+.glance-mini{
+  background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+  border:1px solid var(--border); border-radius:var(--radius-card); padding:var(--sp-4);
+  box-shadow:var(--shadow-sm); transition:box-shadow .2s ease, transform .2s ease;
+}
+.glance-mini:hover{ box-shadow:var(--shadow-md); }
+
+.next-class-card{
+  border-radius:var(--radius-card); padding:var(--sp-6);
+  background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+  border:1px solid var(--border);
+  position:relative; overflow:hidden;
+}
+.next-class-card::before{
+  content:''; position:absolute; top:-60%; right:-15%; width:280px; height:280px;
+  background:radial-gradient(circle, rgba(103,80,164,.14) 0%, transparent 70%);
+  border-radius:50%; pointer-events:none;
+}
+[data-theme="dark"] .next-class-card::before{ background:radial-gradient(circle, rgba(208,188,255,.12) 0%, transparent 70%); }
+.next-class-card.live{ border-color:var(--accent); box-shadow:var(--glow-accent); }
+.live-pulse{ width:8px; height:8px; border-radius:50%; background:var(--accent); position:relative; box-shadow:0 0 10px var(--accent); }
+.live-pulse::after{ content:''; position:absolute; inset:-5px; border-radius:50%; background:var(--accent); opacity:.4; animation:pulse 1.7s ease-in-out infinite; }
+@keyframes pulse{ 0%{ transform:scale(.6); opacity:.5;} 70%{ transform:scale(2.1); opacity:0;} 100%{ opacity:0;} }
+
+.timeline{ position:relative; }
+.timeline-row{ display:flex; gap:var(--sp-4); padding:var(--sp-3) 0; border-bottom:1px solid var(--border-soft); }
+.timeline-row:last-child{ border-bottom:none; }
+.timeline-time{ width:60px; flex-shrink:0; font-family:var(--font-mono); font-size:12px; font-weight:500; color:var(--text-2); padding-top:2px; }
+.timeline-marker{ width:2px; background:var(--border); position:relative; flex-shrink:0; margin-top:4px; border-radius:2px; }
+.timeline-marker.current{ background:var(--accent); box-shadow:0 0 8px var(--accent); }
+.timeline-body{ flex:1; padding-bottom:2px; }
+.timeline-row.completed .timeline-body{ opacity:.5; }
+.timeline-row.completed .timeline-time{ color:var(--text-muted); }
+
+.two-col{ display:grid; grid-template-columns:1.4fr 1fr; gap:var(--sp-6); align-items:start; }
+
+/* ============================================================
+   TIMETABLE
+   ============================================================ */
+.week-grid{ display:grid; grid-template-columns: 54px repeat(6, 1fr); border:1px solid var(--border); border-radius:var(--radius-card); overflow:hidden; background:var(--surface); backdrop-filter:blur(var(--blur)); box-shadow:var(--shadow-sm); }
+.week-head-cell{ padding:10px 6px; text-align:center; font-size:12px; font-weight:650; color:var(--text-2); border-bottom:1px solid var(--border); border-left:1px solid var(--border-soft); background:var(--surface-2); }
+.week-head-cell:first-child{ border-left:none; }
+.week-time-cell{ font-family:var(--font-mono); font-size:11px; color:var(--text-muted); padding:6px 6px 0 0; text-align:right; border-top:1px solid var(--border-soft); }
+.week-day-col{ border-left:1px solid var(--border-soft); position:relative; border-top:1px solid var(--border-soft); min-height:44px; }
+.week-block{
+  position:absolute; left:3px; right:3px; border-radius:9px; padding:5px 7px; overflow:hidden;
+  background:var(--accent-subtle); border:1px solid var(--border); cursor:pointer;
+  font-size:11.5px; line-height:1.3;
+}
+.week-block b{ display:block; font-family:var(--font-mono); font-size:12px; font-weight:600; color:var(--text); }
+.week-block span{ color:var(--text-2); }
+.week-block.live{ background:var(--accent); border-color:var(--accent); box-shadow:var(--glow-accent); }
+.week-block.live b, .week-block.live span{ color:#fff; }
+.week-block.done{ opacity:.5; }
+
+.day-picker{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; margin-bottom:var(--sp-5); }
+.day-pill{ flex-shrink:0; padding:8px 15px; border-radius:99px; background:var(--surface); backdrop-filter:blur(var(--blur)); border:1px solid var(--border); font-size:13px; font-weight:600; color:var(--text-2); cursor:pointer; }
+.day-pill.active{ background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:var(--glow-accent); }
+
+/* ============================================================
+   ATTENDANCE
+   ============================================================ */
+.att-ring-wrap{ display:flex; align-items:center; gap:var(--sp-5); }
+.subject-att-row{ padding:var(--sp-4) 0; border-bottom:1px solid var(--border-soft); }
+.subject-att-row:last-child{ border-bottom:none; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1023px){
+  .sidebar{ display:none; }
+  .main{ margin-left:0; padding:0 var(--sp-4) 90px; }
+  .topbar-mobile{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:var(--sp-4) var(--sp-1) var(--sp-3);
+    position:sticky; top:0; background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+    z-index:60; border-bottom:1px solid var(--border-soft);
+  }
+  .bottom-nav{
+    display:flex; position:fixed; bottom:0; left:0; right:0; z-index:200;
+    background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+    border-top:1px solid var(--border);
+    padding:6px var(--sp-2) calc(env(safe-area-inset-bottom) + 6px);
+    justify-content:space-around;
+  }
+  .bn-item{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 8px; color:var(--text-muted); font-size:10.5px; font-weight:600; border-radius:12px; flex:1; }
+  .bn-item.active{ color:var(--accent-text); }
+  .glance-grid{ grid-template-columns:1fr 1fr; }
+  .glance-hero{ grid-column:span 2; grid-row:auto; }
+  .two-col{ grid-template-columns:1fr; }
+  .field-row{ grid-template-columns:1fr; }
+  .week-grid{ display:none; }
+}
+@media (min-width:1024px){
+  .day-picker{ display:none; }
+}
+@media (max-width:480px){
+  .page-title{ font-size:23px; }
+  .stat-num{ font-size:24px; }
+}
+.hide-mobile{ display:initial; }
+.show-mobile{ display:none; }
+@media (max-width:1023px){ .hide-mobile{ display:none; } .show-mobile{ display:initial; } }
 </style>
 </head>
 <body>
 
-<div class="tide-bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
-<div class="toast-wrap" id="toastWrap"></div>
-<div id="app"></div>
+<div class="shell">
+  <!-- DESKTOP SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">SC</div>
+      <div>
+        <div class="brand-name">Command Center</div>
+        <div class="brand-sub" id="sidebar-college">Academic OS</div>
+      </div>
+    </div>
+    <nav class="nav-list" id="nav-list"></nav>
+    <div class="nav-foot">
+      <div class="nav-item" data-action="theme-toggle" id="theme-toggle-desktop"></div>
+    </div>
+  </aside>
 
-<script type="module" src="./app.js"></script>
+  <main class="main">
+    <div class="topbar-mobile">
+      <div class="row">
+        <div class="brand-mark" style="width:26px;height:26px;font-size:11px;">SC</div>
+        <span style="font-weight:650;font-size:14.5px;">Command Center</span>
+      </div>
+      <button class="btn btn-ghost btn-icon" data-action="theme-toggle" aria-label="Toggle theme" id="theme-toggle-mobile"></button>
+    </div>
+
+    <div id="main-content"></div>
+  </main>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+
+<!-- MORE SHEET (mobile) -->
+<div class="sheet-overlay" id="more-sheet">
+  <div class="sheet-panel">
+    <div class="spread">
+      <span class="section-title">More</span>
+      <button class="btn btn-ghost btn-icon" data-action="close-more" aria-label="Close"></button>
+    </div>
+    <div class="sheet-grid" id="more-grid"></div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div class="toast-root" id="toast-root"></div>
+
+<script>
+/* ==================================================================================
+   ICONS
+   ================================================================================== */
+const ICONS = {
+today:'today',
+timetable:'calendar_view_week',
+subjects:'menu_book',
+attendance:'fact_check',
+tasks:'task_alt',
+study:'timer',
+performance:'monitoring',
+review:'history',
+exams:'school',
+calendar:'calendar_month',
+goals:'flag',
+projects:'folder_open',
+settings:'settings',
+plus:'add',
+x:'close',
+edit:'edit',
+trash:'delete',
+sun:'light_mode',
+moon:'dark_mode',
+monitor:'brightness_auto',
+more:'more_horiz',
+check:'check',
+chevronLeft:'chevron_left',
+chevronRight:'chevron_right',
+archive:'archive',
+copy:'content_copy',
+zap:'bolt',
+alert:'warning',
+play:'play_arrow',
+pause:'pause',
+refresh:'refresh',
+download:'download',
+upload:'upload',
+external:'open_in_new',
+};
+function icon(name, cls=''){ return `<span class="material-symbols-outlined icon ${cls}">${ICONS[name]||''}</span>`; }
+
+/* ==================================================================================
+   SUPABASE SETUP — fill these in from your Supabase project (Settings -> API)
+   ================================================================================== */
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';           // e.g. https://xxxxxxxx.supabase.co
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';  // the "anon public" key
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { detectSessionInUrl: true, flowType: 'pkce' }
+});
+
+/* ==================================================================================
+   STATE (Supabase-backed — persisted in Postgres via the browser, no custom server)
+   ================================================================================== */
+function defaultState(){
+  return {
+    profile:{ name:'', college:'', course:'', branch:'', year:'', semester:'', section:'', target:75, theme:'system', email:'' },
+    subjects:[], classes:[], attendance:[], tasks:[], sessions:[], exams:[], goals:[], projects:[]
+  };
+}
+let state = defaultState();
+
+/* Maps this app's camelCase fields to the snake_case Postgres columns created by schema.sql */
+const RESOURCES = {
+  subjects: { table:'subjects', fields:[
+    ['name','name'],['code','code'],['teacher','teacher'],['room','room'],
+    ['type','type'],['credits','credits'],['target','target'],['archived','archived'],
+  ]},
+  classes: { table:'classes', fields:[
+    ['subjectId','subject_id'],['day','day'],['start','start_time'],['end','end_time'],
+    ['room','room'],['teacher','teacher'],['type','type'],['notes','notes'],
+  ]},
+  attendance: { table:'attendance', fields:[ ['subjectId','subject_id'],['date','date'],['status','status'] ]},
+  tasks: { table:'tasks', fields:[
+    ['title','title'],['description','description'],['subjectId','subject_id'],
+    ['category','category'],['priority','priority'],['dueDate','due_date'],
+    ['dueTime','due_time'],['status','status'],
+  ]},
+  sessions: { table:'sessions', fields:[
+    ['subjectId','subject_id'],['topic','topic'],['date','date'],['start','start_time'],
+    ['end','end_time'],['durationMin','duration_min'],['goal','goal'],['notes','notes'],
+  ]},
+  exams: { table:'exams', fields:[
+    ['subjectId','subject_id'],['type','type'],['date','date'],['time','time'],
+    ['syllabus','syllabus'],['prep','prep'],['notes','notes'],
+  ]},
+  goals: { table:'goals', fields:[
+    ['title','title'],['description','description'],['target','target'],
+    ['current','current'],['unit','unit'],['deadline','deadline'],
+  ]},
+  projects: { table:'projects', fields:[
+    ['name','name'],['description','description'],['tech','tech'],['status','status'],
+    ['deadline','deadline'],['github','github'],['live','live'],['notes','notes'],
+  ]},
+};
+function rowToJs(row, def){
+  const out = { id: row.id };
+  def.fields.forEach(([js,db])=>{ out[js] = row[db]; });
+  return out;
+}
+function jsToRow(data, def){
+  const out = {};
+  def.fields.forEach(([js,db])=>{
+    if(data[js] !== undefined) out[db] = (data[js]==='' ? null : data[js]);
+  });
+  return out;
+}
+async function currentUserId(){
+  const { data } = await sb.auth.getSession();
+  if(!data.session) throw new Error('auth');
+  return data.session.user.id;
+}
+async function fetchAll(resourceKey){
+  const def = RESOURCES[resourceKey];
+  const { data, error } = await sb.from(def.table).select('*').order('id');
+  if(error) throw new Error(error.message);
+  return data.map(r=>rowToJs(r, def));
+}
+async function createEntity(resourceKey, arr, data){
+  const def = RESOURCES[resourceKey];
+  const row = jsToRow(data, def);
+  row.user_id = await currentUserId();
+  const { data: inserted, error } = await sb.from(def.table).insert(row).select().single();
+  if(error) throw new Error(error.message);
+  const mapped = rowToJs(inserted, def);
+  arr.push(mapped);
+  return mapped;
+}
+async function updateEntity(resourceKey, arr, id, partial){
+  const def = RESOURCES[resourceKey];
+  const existing = arr.find(x=>x.id===id);
+  const merged = Object.assign({}, existing, partial);
+  const row = jsToRow(merged, def);
+  const { data: updated, error } = await sb.from(def.table).update(row).eq('id', id).select().single();
+  if(error) throw new Error(error.message);
+  Object.assign(existing, rowToJs(updated, def));
+  return existing;
+}
+async function deleteEntity(resourceKey, arr, id){
+  const def = RESOURCES[resourceKey];
+  const { error } = await sb.from(def.table).delete().eq('id', id);
+  if(error) throw new Error(error.message);
+  const idx = arr.findIndex(x=>x.id===id);
+  if(idx>-1) arr.splice(idx,1);
+}
+async function loadProfile(){
+  const uidVal = await currentUserId();
+  const { data: sessionData } = await sb.auth.getSession();
+  const { data, error } = await sb.from('profiles').select('*').eq('id', uidVal).single();
+  if(error) throw new Error(error.message);
+  return {
+    name:data.name||'', college:data.college||'', course:data.course||'', branch:data.branch||'',
+    year:data.year||'', semester:data.semester||'', section:data.section||'',
+    target:data.target||75, theme:data.theme||'system', email: sessionData.session.user.email
+  };
+}
+async function updateProfile(partial){
+  const merged = Object.assign({}, state.profile, partial);
+  const uidVal = await currentUserId();
+  const { error } = await sb.from('profiles').update({
+    name: merged.name||'', college: merged.college||'', course: merged.course||'', branch: merged.branch||'',
+    year: merged.year||'', semester: merged.semester||'', section: merged.section||'',
+    target: Number(merged.target)||75, theme: merged.theme||'system'
+  }).eq('id', uidVal);
+  if(error) throw new Error(error.message);
+  Object.assign(state.profile, merged);
+  return state.profile;
+}
+
+/* ==================================================================================
+   HELPERS — dates, times, formatting
+   ================================================================================== */
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_FULL = { Mon:'Monday', Tue:'Tuesday', Wed:'Wednesday', Thu:'Thursday', Fri:'Friday', Sat:'Saturday' };
+
+function todayISO(){ return isoFromDate(new Date()); }
+function isoFromDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function todayDayCode(){ const j = new Date().getDay(); return j===0 ? null : DAYS[j-1]; }
+function nowMinutes(){ const d=new Date(); return d.getHours()*60+d.getMinutes(); }
+function toMin(hhmm){ if(!hhmm) return 0; const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
+function fmtTime(hhmm){
+  if(!hhmm) return '';
+  let [h,m]=hhmm.split(':').map(Number);
+  const ap = h>=12?'PM':'AM';
+  h = h%12; if(h===0) h=12;
+  return `${h}:${String(m).padStart(2,'0')} ${ap}`;
+}
+function fmtDateShort(iso){
+  if(!iso) return '';
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString(undefined,{ weekday:'short', day:'numeric', month:'short' });
+}
+function fmtDateLong(iso){
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString(undefined,{ weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+function daysBetween(iso){
+  const a = new Date(todayISO()+'T00:00:00');
+  const b = new Date(iso+'T00:00:00');
+  return Math.round((b-a)/86400000);
+}
+function clamp(n,min,max){ return Math.max(min,Math.min(max,n)); }
+function esc(s){ return (s===undefined||s===null?'':String(s)).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ==================================================================================
+   DOMAIN HELPERS
+   ================================================================================== */
+function activeSubjects(){ return state.subjects.filter(s=>!s.archived); }
+function getSubject(id){ return state.subjects.find(s=>s.id===id); }
+function subjectName(id){ const s=getSubject(id); return s? s.name : 'Unknown subject'; }
+
+function classesForDay(day){
+  return state.classes.filter(c=>c.day===day).sort((a,b)=>toMin(a.start)-toMin(b.start));
+}
+function classStatus(cls){
+  if(cls.day !== todayDayCode()) return 'other-day';
+  const now = nowMinutes(), s=toMin(cls.start), e=toMin(cls.end);
+  if(now < s) return 'upcoming';
+  if(now >= s && now < e) return 'live';
+  return 'completed';
+}
+function countdownLabel(mins){
+  if(mins<0) mins=0;
+  const h = Math.floor(mins/60), m = mins%60;
+  if(h<=0) return `${m} min`;
+  return `${h}h ${m}m`;
+}
+
+function subjectAttendance(subjectId){
+  const recs = state.attendance.filter(a=>a.subjectId===subjectId);
+  const total = recs.length;
+  const present = recs.filter(r=>r.status==='present').length;
+  return { total, present, pct: total? present/total*100 : null };
+}
+function overallAttendance(){
+  const total = state.attendance.length;
+  const present = state.attendance.filter(r=>r.status==='present').length;
+  return { total, present, pct: total? present/total*100 : null };
+}
+function attendanceStatusLabel(pct, target){
+  if(pct===null || pct===undefined) return null;
+  const diff = pct - target;
+  if(diff >= 5) return { label:'SAFE', tone:'success' };
+  if(diff >= 0) return { label:'ON TRACK', tone:'success' };
+  if(diff >= -10) return { label:'NEEDS ATTENTION', tone:'warning' };
+  return { label:'CRITICAL', tone:'danger' };
+}
+function attendanceIntel(present, total, targetPct){
+  const target = targetPct/100;
+  if(total===0) return { kind:'none' };
+  const pct = present/total;
+  if(pct >= target){
+    let canMiss = target>0 ? Math.floor(present/target - total) : 999;
+    if(canMiss < 0) canMiss = 0;
+    return { kind:'safe', canMiss };
+  }
+  if(target >= 1) return { kind:'critical', mustAttend:null };
+  let mustAttend = Math.ceil((target*total - present)/(1-target));
+  if(mustAttend < 0) mustAttend = 0;
+  return { kind:'attention', mustAttend };
+}
+
+function taskIsOverdue(t){ return t.status!=='Completed' && t.dueDate && t.dueDate < todayISO(); }
+function taskIsToday(t){ return t.status!=='Completed' && t.dueDate === todayISO(); }
+function sortTasks(list){ return [...list].sort((a,b)=> (a.dueDate||'9999').localeCompare(b.dueDate||'9999') || (a.dueTime||'').localeCompare(b.dueTime||'')); }
+
+function weekRange(){ // Monday..Sunday containing today
+  const d = new Date(); const day = d.getDay(); const diffToMon = day===0?-6:1-day;
+  const mon = new Date(d); mon.setDate(d.getDate()+diffToMon); mon.setHours(0,0,0,0);
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+  return { start: isoFromDate(mon), end: isoFromDate(sun) };
+}
+function sessionsInRange(startISO,endISO){ return state.sessions.filter(s=> s.date>=startISO && s.date<=endISO); }
+function studyMinutes(list){ return list.reduce((sum,s)=>sum+(Number(s.durationMin)||0),0); }
+
+/* ==================================================================================
+   NAVIGATION CONFIG
+   ================================================================================== */
+const NAV = [
+  { id:'today', label:'Today', icon:'today' },
+  { id:'timetable', label:'Timetable', icon:'timetable' },
+  { id:'subjects', label:'Subjects', icon:'subjects' },
+  { id:'attendance', label:'Attendance', icon:'attendance' },
+  { id:'tasks', label:'Tasks', icon:'tasks' },
+  { id:'study', label:'Study', icon:'study' },
+  { id:'performance', label:'Performance', icon:'performance' },
+  { id:'review', label:'Weekly Review', icon:'review' },
+  { id:'exams', label:'Exams', icon:'exams' },
+  { id:'calendar', label:'Calendar', icon:'calendar' },
+  { id:'goals', label:'Goals', icon:'goals' },
+  { id:'projects', label:'Projects', icon:'projects' },
+  { id:'settings', label:'Settings', icon:'settings' },
+];
+const MOBILE_PRIMARY = ['today','timetable','attendance','tasks'];
+const MOBILE_MORE = ['subjects','study','performance','review','exams','calendar','goals','projects','settings'];
+
+let currentRoute = 'today';
+let uiState = { timetableDay: todayDayCode() || 'Mon', calendarCursor: new Date(), calendarSelected: todayISO(), timerMode:'focus', timerPreset:25, timerBreakPreset:5, timerRemaining:25*60, timerRunning:false, timerLinkSubject:'', timerLinkTask:'' };
+
+/* ==================================================================================
+   RENDER: SHELL (sidebar / bottom nav / topbar)
+   ================================================================================== */
+function renderShell(){
+  document.getElementById('nav-list').innerHTML = NAV.map(n=>`
+    <a href="#${n.id}" class="nav-item ${currentRoute===n.id?'active':''}">
+      ${icon(n.icon)}<span>${n.label}</span>
+    </a>`).join('');
+
+  document.getElementById('bottom-nav').innerHTML =
+    MOBILE_PRIMARY.map(id=>{
+      const n = NAV.find(x=>x.id===id);
+      return `<a href="#${id}" class="bn-item ${currentRoute===id?'active':''}">${icon(n.icon)}<span>${n.label}</span></a>`;
+    }).join('') +
+    `<div class="bn-item ${MOBILE_MORE.includes(currentRoute)?'active':''}" data-action="open-more">${icon('more')}<span>More</span></div>`;
+
+  document.getElementById('more-grid').innerHTML = MOBILE_MORE.map(id=>{
+    const n = NAV.find(x=>x.id===id);
+    return `<a href="#${id}" class="sheet-item ${currentRoute===id?'active':''}" data-action="close-more">
+      <div class="sheet-icon-wrap">${icon(n.icon)}</div><span>${n.label}</span></a>`;
+  }).join('');
+
+  const themeBtn = themeIconHtml();
+  document.getElementById('theme-toggle-desktop').innerHTML = `${themeBtn.icon}<span>${themeBtn.label}</span>`;
+  document.getElementById('theme-toggle-mobile').innerHTML = themeBtn.icon;
+
+  const college = state.profile.college || 'Academic OS';
+  document.getElementById('sidebar-college').textContent = college;
+}
+function themeIconHtml(){
+  const t = state.profile.theme || 'system';
+  if(t==='light') return { icon:icon('sun'), label:'Light theme' };
+  if(t==='dark') return { icon:icon('moon'), label:'Dark theme' };
+  return { icon:icon('monitor'), label:'System theme' };
+}
+function applyTheme(){
+  const t = state.profile.theme || 'system';
+  let resolved = t;
+  if(t==='system') resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', resolved);
+}
+async function cycleTheme(){
+  const order = ['system','light','dark'];
+  const i = order.indexOf(state.profile.theme||'system');
+  const theme = order[(i+1)%order.length];
+  state.profile.theme = theme; applyTheme(); renderShell();
+  try{ await updateProfile({ theme }); }catch(e){ /* theme still applied locally even if sync fails */ }
+}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ if((state.profile.theme||'system')==='system') applyTheme(); });
+
+function toggleMoreSheet(){ document.getElementById('more-sheet').classList.toggle('show'); }
+function closeMoreSheet(){ document.getElementById('more-sheet').classList.remove('show'); }
+
+/* ==================================================================================
+   ROUTER
+   ================================================================================== */
+const VIEWS = {
+  today: renderToday, timetable: renderTimetable, subjects: renderSubjects, attendance: renderAttendance,
+  tasks: renderTasks, study: renderStudy, performance: renderPerformance, review: renderReview,
+  exams: renderExams, calendar: renderCalendar, goals: renderGoals, projects: renderProjects, settings: renderSettings
+};
+function route(){
+  const id = (location.hash||'#today').slice(1);
+  currentRoute = VIEWS[id] ? id : 'today';
+  renderShell();
+  document.getElementById('main-content').innerHTML = VIEWS[currentRoute]();
+  window.scrollTo(0,0);
+  closeMoreSheet();
+}
+window.addEventListener('hashchange', route);
+
+/* ==================================================================================
+   TOAST
+   ================================================================================== */
+function toast(msg){
+  const root = document.getElementById('toast-root');
+  const el = document.createElement('div');
+  el.className='toast'; el.textContent = msg;
+  root.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .2s ease'; setTimeout(()=>el.remove(),200); }, 1800);
+}
+
+/* ==================================================================================
+   MODAL SYSTEM
+   ================================================================================== */
+let currentModal = null;
+function openModal({ title, bodyHtml, onSubmit, submitLabel='Save', deleteFn=null, duplicateFn=null }){
+  currentModal = { onSubmit, deleteFn, duplicateFn };
+  document.getElementById('modal-root').innerHTML = `
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-panel">
+        <div class="modal-head">
+          <span class="modal-title">${esc(title)}</span>
+          <button class="btn btn-ghost btn-icon" data-action="modal-close" aria-label="Close">${icon('x')}</button>
+        </div>
+        <form id="modal-form">
+          <div class="stack" style="gap:14px;">${bodyHtml}</div>
+          <div class="modal-foot">
+            ${deleteFn ? `<button type="button" class="btn btn-danger" data-action="modal-delete">${icon('trash','icon-sm')} Delete</button>` : ''}
+            ${duplicateFn ? `<button type="button" class="btn btn-ghost btn-icon" data-action="modal-duplicate" aria-label="Duplicate">${icon('copy','icon-sm')}</button>` : ''}
+            <div style="flex:1;"></div>
+            <button type="button" class="btn btn-secondary" data-action="modal-close">Cancel</button>
+            <button type="submit" class="btn btn-primary">${esc(submitLabel)}</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+  requestAnimationFrame(()=>document.getElementById('modal-overlay').classList.add('show'));
+}
+function closeModal(){
+  const ov = document.getElementById('modal-overlay');
+  if(!ov) return;
+  ov.classList.remove('show');
+  setTimeout(()=>{ document.getElementById('modal-root').innerHTML=''; }, 150);
+  currentModal = null;
+}
+function fieldHtml(label, name, opts={}){
+  const { type='text', value='', required=false, placeholder='', options=null, step=null } = opts;
+  const req = required ? 'required' : '';
+  if(options){
+    return `<div class="field"><label>${esc(label)}</label>
+      <select name="${name}" ${req}>${options.map(o=>`<option value="${esc(o.value)}" ${String(o.value)===String(value)?'selected':''}>${esc(o.label)}</option>`).join('')}</select></div>`;
+  }
+  if(type==='textarea'){
+    return `<div class="field"><label>${esc(label)}</label><textarea name="${name}" placeholder="${esc(placeholder)}">${esc(value)}</textarea></div>`;
+  }
+  return `<div class="field"><label>${esc(label)}</label><input type="${type}" name="${name}" value="${esc(value)}" placeholder="${esc(placeholder)}" ${req} ${step?`step="${step}"`:''}></div>`;
+}
+function subjectOptions(){ return activeSubjects().map(s=>({value:s.id, label:`${s.name} (${s.code})`})); }
+
+/* ==================================================================================
+   VIEW: TODAY
+   ================================================================================== */
+function renderToday(){
+  const name = state.profile.name || 'there';
+  const dayCode = todayDayCode();
+  const todaysClasses = dayCode ? classesForDay(dayCode) : [];
+  const overall = overallAttendance();
+  const pendingTasks = state.tasks.filter(t=>t.status!=='Completed');
+  const weekS = sessionsInRange(weekRange().start, todayISO());
+  const studyHrsWeek = (studyMinutes(weekS)/60);
+
+  const next = todaysClasses.map(c=>({c, st:classStatus(c)})).find(x=>x.st==='live' || x.st==='upcoming');
+
+  return `
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Good ${dayPart()}, ${esc(name.split(' ')[0]||name)}</h1>
+      <p class="page-sub">${fmtDateLong(todayISO())}</p>
+    </div>
+  </div>
+
+  <div class="eyebrow" style="margin-bottom:10px;">Today at a glance</div>
+  <div class="glance-grid">
+    ${renderNextClassHero(next, todaysClasses, dayCode)}
+    <div class="glance-mini">
+      <div class="stat-num">${overall.pct===null ? '—' : overall.pct.toFixed(1)+'%'}</div>
+      <div class="stat-label">Overall attendance</div>
+    </div>
+    <div class="glance-mini">
+      <div class="stat-num">${pendingTasks.length}</div>
+      <div class="stat-label">Pending tasks</div>
+    </div>
+    <div class="glance-mini" style="grid-column:span 2;">
+      <div class="spread">
+        <div>
+          <div class="stat-num" style="font-size:22px;">${studyHrsWeek.toFixed(1)}h</div>
+          <div class="stat-label">Study time this week</div>
+        </div>
+        <div class="row">${icon('study','icon-lg')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="stack" style="gap:28px;">
+      <section>
+        <div class="section-title" style="margin-bottom:12px;">Today's timeline</div>
+        ${renderTodayTimeline(todaysClasses, dayCode)}
+      </section>
+
+      <section>
+        <div class="spread" style="margin-bottom:12px;">
+          <div class="section-title">Priorities</div>
+          <a href="#tasks" class="badge badge-neutral">View all</a>
+        </div>
+        ${renderPriorities()}
+      </section>
+    </div>
+
+    <div class="stack" style="gap:24px;">
+      <section class="card">
+        <div class="section-title" style="margin-bottom:12px;">Attendance health</div>
+        ${renderAttendanceHealthMini(overall)}
+      </section>
+
+      <section class="card">
+        <div class="section-title" style="margin-bottom:12px;">Upcoming exam</div>
+        ${renderUpcomingExamMini()}
+      </section>
+
+      <section class="card">
+        <div class="section-title" style="margin-bottom:14px;">Weekly progress</div>
+        ${renderWeeklyProgressMini()}
+      </section>
+    </div>
+  </div>`;
+}
+function dayPart(){ const h=new Date().getHours(); if(h<12) return 'morning'; if(h<17) return 'afternoon'; return 'evening'; }
+
+function renderNextClassHero(next, todaysClasses, dayCode){
+  if(!dayCode){
+    return `<div class="glance-hero"><div>
+      <div class="eyebrow" style="margin-bottom:10px;">Next class</div>
+      <div class="empty" style="padding:20px 0;">${icon('today','icon-lg')}<div class="empty-title">No classes today</div><div class="empty-sub">It's the weekend. Enjoy the break.</div></div>
+    </div></div>`;
+  }
+  if(!next){
+    const done = todaysClasses.length>0;
+    return `<div class="glance-hero"><div>
+      <div class="eyebrow" style="margin-bottom:10px;">Next class</div>
+      <div class="empty" style="padding:20px 0;">${icon('today','icon-lg')}<div class="empty-title">${done?'All classes done for today':'No classes scheduled today'}</div>${done?'':`<div class="empty-sub">Build your weekly timetable to see it here.</div>`}</div>
+    </div></div>`;
+  }
+  const c = next.c, sub = getSubject(c.subjectId);
+  const isLive = next.st==='live';
+  const s = toMin(c.start);
+  return `<div class="glance-hero next-class-card ${isLive?'live':''}">
+    <div>
+      <div class="spread" style="margin-bottom:16px;">
+        <div class="eyebrow">Next class</div>
+        ${isLive ? `<div class="row" style="gap:6px;"><span class="live-pulse"></span><span class="badge badge-accent">LIVE</span></div>` : `<span class="badge badge-neutral">${countdownLabel(s-nowMinutes())} away</span>`}
+      </div>
+      <div style="font-size:22px;font-weight:700;letter-spacing:-.01em;">${esc(sub? sub.name : 'Unknown subject')}</div>
+      <div class="page-sub" style="margin-top:2px;">${esc(sub? sub.code : '')}</div>
+    </div>
+    <div>
+      ${isLive ? `<div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:${clamp((nowMinutes()-s)/(toMin(c.end)-s)*100,0,100)}%;"></div></div>` : ''}
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div class="row" style="gap:16px;flex-wrap:wrap;">
+          <span class="page-sub">${fmtTime(c.start)} – ${fmtTime(c.end)}</span>
+          <span class="page-sub">${esc(c.room||'—')}</span>
+        </div>
+        <span class="page-sub">${esc(c.teacher||'')}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTodayTimeline(list, dayCode){
+  if(!dayCode) return `<div class="card empty">${icon('timetable','icon-lg')}<div class="empty-title">No classes scheduled today</div></div>`;
+  if(list.length===0) return `<div class="card empty">${icon('timetable','icon-lg')}<div class="empty-title">No classes scheduled today</div><div class="empty-sub">Build your weekly timetable.</div></div>`;
+  return `<div class="card"><div class="timeline">${list.map(c=>{
+    const st = classStatus(c); const sub = getSubject(c.subjectId);
+    return `<div class="timeline-row ${st}">
+      <div class="timeline-time">${fmtTime(c.start)}</div>
+      <div class="timeline-marker ${st==='live'?'current':''}"></div>
+      <div class="timeline-body">
+        <div class="spread">
+          <div>
+            <div style="font-weight:600;">${esc(sub?sub.name:'Unknown')} <span class="page-sub" style="font-weight:500;">${esc(sub?sub.code:'')}</span></div>
+            <div class="page-sub" style="margin-top:2px;">${esc(c.room||'—')} · ${esc(c.teacher||'—')} · ${esc(c.type||'Theory')}</div>
+          </div>
+          <span class="badge ${st==='live'?'badge-accent':st==='completed'?'badge-neutral':'badge-info'}">${st==='live'?'LIVE':st==='completed'?'Completed':'Upcoming'}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div></div>`;
+}
+
+function renderPriorities(){
+  const overdue = state.tasks.filter(taskIsOverdue);
+  const dueToday = state.tasks.filter(taskIsToday);
+  const high = state.tasks.filter(t=>t.status!=='Completed' && t.priority==='High' && !taskIsOverdue(t) && !taskIsToday(t));
+  const list = [...overdue, ...dueToday, ...high].slice(0,6);
+  if(list.length===0) return `<div class="card empty">${icon('tasks','icon-lg')}<div class="empty-title">Nothing pending</div></div>`;
+  return `<div class="card" style="padding:6px var(--sp-5);">${list.map(t=>taskRow(t,true)).join('')}</div>`;
+}
+
+function renderAttendanceHealthMini(overall){
+  if(overall.total===0) return `<div class="empty" style="padding:12px 0;"><div class="empty-sub">Not recorded yet.</div></div>`;
+  const target = state.profile.target;
+  const status = attendanceStatusLabel(overall.pct, target);
+  const weak = activeSubjects().map(s=>({s, st:subjectAttendance(s.id)})).filter(x=>x.st.total>0 && x.st.pct < target).sort((a,b)=>a.st.pct-b.st.pct).slice(0,3);
+  return `
+    <div class="spread" style="margin-bottom:10px;">
+      <div class="stat-num" style="font-size:26px;">${overall.pct.toFixed(1)}%</div>
+      <span class="badge badge-${status.tone}">${status.label}</span>
+    </div>
+    <div class="page-sub" style="margin-bottom:10px;">${overall.present} / ${overall.total} classes · target ${target}%</div>
+    <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:${clamp(overall.pct,0,100)}%;background:${status.tone==='danger'?'var(--danger)':status.tone==='warning'?'var(--warning)':'var(--success)'};"></div></div>
+    ${weak.length ? `<div class="field-hint" style="margin-bottom:6px;font-weight:600;color:var(--text-2);">Needs attention</div>${weak.map(w=>`<div class="spread" style="padding:5px 0;font-size:12.5px;"><span>${esc(w.s.name)}</span><span style="color:var(--warning);font-weight:600;">${w.st.pct.toFixed(1)}%</span></div>`).join('') }` : ''}
+  `;
+}
+
+function renderUpcomingExamMini(){
+  const upcoming = state.exams.filter(e=>e.date>=todayISO()).sort((a,b)=>a.date.localeCompare(b.date));
+  if(upcoming.length===0) return `<div class="empty" style="padding:8px 0;"><div class="empty-sub">No upcoming exams.</div></div>`;
+  const e = upcoming[0]; const sub = getSubject(e.subjectId); const d = daysBetween(e.date);
+  return `
+    <div class="eyebrow" style="margin-bottom:4px;">${esc(sub?sub.name:'')}</div>
+    <div style="font-weight:650;font-size:15px;margin-bottom:6px;">${d<=0?'Today':d+' day'+(d===1?'':'s')+' remaining'}</div>
+    <div class="page-sub">${fmtDateShort(e.date)}${e.time?' · '+fmtTime(e.time):''}</div>
+  `;
+}
+
+function renderWeeklyProgressMini(){
+  const {start,end} = weekRange();
+  const sess = sessionsInRange(start,end);
+  const hrs = (studyMinutes(sess)/60).toFixed(1);
+  const tasksDone = state.tasks.filter(t=>t.status==='Completed' && t.dueDate>=start && t.dueDate<=end).length;
+  const classesAttended = state.attendance.filter(a=>a.status==='present' && a.date>=start && a.date<=end).length;
+  const rows = [
+    ['Study hours', hrs+'h'],
+    ['Tasks completed', tasksDone],
+    ['Classes attended', classesAttended],
+    ['Focus sessions', sess.length],
+  ];
+  return rows.map(([l,v])=>`<div class="spread" style="padding:6px 0;"><span class="page-sub">${l}</span><span style="font-weight:650;">${v}</span></div>`).join('');
+}
+
+/* ==================================================================================
+   VIEW: TIMETABLE
+   ================================================================================== */
+function renderTimetable(){
+  const day = uiState.timetableDay;
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Timetable</h1><p class="page-sub">Your weekly class schedule.</p></div>
+    <button class="btn btn-primary" data-action="add-class">${icon('plus','icon-sm')} Add class</button>
+  </div>
+
+  <div class="day-picker">${DAYS.map(d=>`<div class="day-pill ${d===day?'active':''}" data-action="set-day" data-id="${d}">${d}${d===todayDayCode()?' •':''}</div>`).join('')}</div>
+
+  <div class="show-mobile">${renderMobileDayTimetable(day)}</div>
+  <div class="hide-mobile">${renderWeekGrid()}</div>
+  `;
+}
+function renderMobileDayTimetable(day){
+  const list = classesForDay(day);
+  if(list.length===0) return `<div class="card empty">${icon('timetable','icon-lg')}<div class="empty-title">No classes on ${DAY_FULL[day]}</div><div class="empty-sub">Add a class to build your timetable.</div></div>`;
+  return `<div class="card"><div class="timeline">${list.map(c=>{
+    const st = day===todayDayCode() ? classStatus(c) : 'upcoming';
+    const sub = getSubject(c.subjectId);
+    return `<div class="timeline-row ${st}" data-action="edit-class" data-id="${c.id}" style="cursor:pointer;">
+      <div class="timeline-time">${fmtTime(c.start)}</div>
+      <div class="timeline-marker ${st==='live'?'current':''}"></div>
+      <div class="timeline-body">
+        <div class="spread">
+          <div>
+            <div style="font-weight:600;">${esc(sub?sub.name:'Unknown')}</div>
+            <div class="page-sub" style="margin-top:2px;">${esc(sub?sub.code:'')} · ${esc(c.room||'—')} · ${esc(c.teacher||'—')}</div>
+          </div>
+          ${day===todayDayCode()?`<span class="badge ${st==='live'?'badge-accent':st==='completed'?'badge-neutral':'badge-info'}">${st==='live'?'LIVE':st==='completed'?'Done':'Upcoming'}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div></div>`;
+}
+function renderWeekGrid(){
+  if(state.classes.length===0){
+    return `<div class="card empty">${icon('timetable','icon-lg')}<div class="empty-title">Build your weekly timetable</div><div class="empty-sub">Add classes for each day to see your full week.</div></div>`;
+  }
+  const minStart = Math.min(...state.classes.map(c=>toMin(c.start)), 8*60);
+  const maxEnd = Math.max(...state.classes.map(c=>toMin(c.end)), 17*60);
+  const startH = Math.floor(minStart/60), endH = Math.ceil(maxEnd/60);
+  const totalMin = (endH-startH)*60;
+  const pxPerMin = 1.15;
+  const hours = []; for(let h=startH; h<=endH; h++) hours.push(h);
+
+  const cols = DAYS.map(d=>{
+    const list = classesForDay(d);
+    const blocks = list.map(c=>{
+      const top = (toMin(c.start)-startH*60)*pxPerMin;
+      const height = Math.max((toMin(c.end)-toMin(c.start))*pxPerMin, 30);
+      const st = d===todayDayCode() ? classStatus(c) : '';
+      const sub = getSubject(c.subjectId);
+      return `<div class="week-block ${st}" style="top:${top}px;height:${height}px;" data-action="edit-class" data-id="${c.id}">
+        <b>${esc(sub?sub.code:'—')}</b><span>${fmtTime(c.start)}</span>
+      </div>`;
+    }).join('');
+    return `<div class="week-day-col" style="height:${totalMin*pxPerMin}px;">${blocks}</div>`;
+  }).join('');
+
+  const timeGutter = hours.map(h=>`<div class="week-time-cell" style="height:${60*pxPerMin}px;">${h%12===0?12:h%12}${h<12?'am':'pm'}</div>`).join('');
+
+  return `<div class="week-grid">
+    <div class="week-head-cell"></div>
+    ${DAYS.map(d=>`<div class="week-head-cell">${d}${d===todayDayCode()?' •':''}</div>`).join('')}
+    <div>${timeGutter}</div>
+    ${cols}
+  </div>`;
+}
+function openClassModal(id){
+  const c = id ? state.classes.find(x=>x.id===id) : null;
+  if(activeSubjects().length===0){ toast('Add a subject first'); location.hash='subjects'; return; }
+  openModal({
+    title: c? 'Edit class' : 'Add class',
+    submitLabel: c? 'Save changes' : 'Add class',
+    deleteFn: c ? async ()=>{
+      try{ await deleteEntity('classes', state.classes, c.id); toast('Class removed'); route(); }
+      catch(e){ toast(e.message); }
+    } : null,
+    duplicateFn: c ? async ()=>{ await duplicateClass(c.id); } : null,
+    bodyHtml: `
+      ${fieldHtml('Subject','subjectId',{ options:subjectOptions(), value:c?c.subjectId:'', required:true })}
+      ${fieldHtml('Day','day',{ options:DAYS.map(d=>({value:d,label:DAY_FULL[d]})), value:c?c.day:uiState.timetableDay, required:true })}
+      <div class="field-row">
+        ${fieldHtml('Start time','start',{ type:'time', value:c?c.start:'09:00', required:true })}
+        ${fieldHtml('End time','end',{ type:'time', value:c?c.end:'10:00', required:true })}
+      </div>
+      ${fieldHtml('Room / Lab','room',{ value:c?c.room:'', placeholder:'e.g. Room 204' })}
+      ${fieldHtml('Teacher','teacher',{ value:c?c.teacher:'', placeholder:'e.g. Dr. Rao' })}
+      ${fieldHtml('Type','type',{ options:[{value:'Theory',label:'Theory'},{value:'Lab',label:'Lab'}], value:c?c.type:'Theory' })}
+      ${fieldHtml('Notes','notes',{ type:'textarea', value:c?c.notes:'' })}
+    `,
+    async onSubmit(data){
+      if(toMin(data.end) <= toMin(data.start)){ toast('End time must be after start time'); return; }
+      try{
+        if(c){ await updateEntity('classes', state.classes, c.id, data); toast('Class updated'); }
+        else { await createEntity('classes', state.classes, data); toast('Class added'); }
+        closeModal(); route();
+      }catch(e){ toast(e.message); }
+    }
+  });
+}
+async function duplicateClass(id){
+  const c = state.classes.find(x=>x.id===id); if(!c) return;
+  try{ const { id:_old, ...rest } = c; await createEntity('classes', state.classes, rest); toast('Class duplicated'); route(); }
+  catch(e){ toast(e.message); }
+}
+
+/* ==================================================================================
+   VIEW: SUBJECTS
+   ================================================================================== */
+function renderSubjects(){
+  const list = state.subjects.filter(s=>!s.archived);
+  const archived = state.subjects.filter(s=>s.archived);
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Subjects</h1><p class="page-sub">Manage the subjects on your timetable.</p></div>
+    <button class="btn btn-primary" data-action="add-subject">${icon('plus','icon-sm')} Add subject</button>
+  </div>
+  ${list.length===0 ? `<div class="card empty">${icon('subjects','icon-lg')}<div class="empty-title">Add your first subject</div><div class="empty-sub">Subjects power your timetable, attendance and exams.</div></div>` :
+  `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+    ${list.map(s=>{
+      const att = subjectAttendance(s.id);
+      return `<div class="card">
+        <div class="spread" style="margin-bottom:10px;">
+          <div>
+            <div style="font-weight:650;font-size:15px;">${esc(s.name)}</div>
+            <div class="page-sub">${esc(s.code)}</div>
+          </div>
+          <span class="badge badge-neutral">${esc(s.type||'Theory')}</span>
+        </div>
+        <div class="page-sub" style="margin-bottom:2px;">${esc(s.teacher||'No teacher set')}</div>
+        <div class="page-sub" style="margin-bottom:12px;">${esc(s.room||'No room set')} ${s.credits?'· '+esc(s.credits)+' credits':''}</div>
+        <div class="spread" style="margin-bottom:14px;">
+          <span class="page-sub">Attendance</span>
+          <span style="font-weight:650;">${att.pct===null?'—':att.pct.toFixed(1)+'%'}</span>
+        </div>
+        <div class="row" style="gap:8px;">
+          <button class="btn btn-secondary btn-sm" style="flex:1;" data-action="edit-subject" data-id="${s.id}">${icon('edit','icon-sm')} Edit</button>
+          <button class="btn btn-ghost btn-sm btn-icon" data-action="archive-subject" data-id="${s.id}" aria-label="Archive">${icon('archive','icon-sm')}</button>
+          <button class="btn btn-ghost btn-sm btn-icon" data-action="delete-subject" data-id="${s.id}" aria-label="Delete">${icon('trash','icon-sm')}</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`}
+  ${archived.length ? `<div style="margin-top:32px;"><div class="section-title" style="margin-bottom:12px;">Archived</div>
+    <div class="card">${archived.map(s=>`<div class="list-row spread"><span style="color:var(--text-muted);">${esc(s.name)} (${esc(s.code)})</span><button class="btn btn-ghost btn-sm" data-action="unarchive-subject" data-id="${s.id}">Restore</button></div>`).join('')}</div>
+  </div>` : ''}
+  `;
+}
+function openSubjectModal(id){
+  const s = id ? getSubject(id) : null;
+  openModal({
+    title: s ? 'Edit subject' : 'Add subject',
+    submitLabel: s ? 'Save changes' : 'Add subject',
+    deleteFn: s ? async ()=>{
+      try{
+        await deleteEntity('subjects', state.subjects, s.id);
+        state.classes = state.classes.filter(x=>x.subjectId!==s.id);
+        state.attendance = state.attendance.filter(x=>x.subjectId!==s.id);
+        toast('Subject removed'); route();
+      }catch(e){ toast(e.message); }
+    } : null,
+    bodyHtml: `
+      ${fieldHtml('Subject name','name',{ value:s?s.name:'', required:true, placeholder:'e.g. Data Structures' })}
+      ${fieldHtml('Subject code','code',{ value:s?s.code:'', required:true, placeholder:'e.g. CS201' })}
+      ${fieldHtml('Teacher','teacher',{ value:s?s.teacher:'' })}
+      ${fieldHtml('Room','room',{ value:s?s.room:'' })}
+      <div class="field-row">
+        ${fieldHtml('Type','type',{ options:[{value:'Theory',label:'Theory'},{value:'Lab',label:'Lab'}], value:s?s.type:'Theory' })}
+        ${fieldHtml('Credits','credits',{ type:'number', value:s?s.credits:'', step:'0.5' })}
+      </div>
+      ${fieldHtml('Attendance target (%)','target',{ type:'number', value:s?s.target:state.profile.target })}
+    `,
+    async onSubmit(data){
+      try{
+        if(s){ await updateEntity('subjects', state.subjects, s.id, data); toast('Subject updated'); }
+        else { await createEntity('subjects', state.subjects, Object.assign({ archived:false }, data)); toast('Subject added'); }
+        closeModal(); route();
+      }catch(e){ toast(e.message); }
+    }
+  });
+}
+
+/* ==================================================================================
+   VIEW: ATTENDANCE
+   ================================================================================== */
+function renderAttendance(){
+  const overall = overallAttendance();
+  const target = state.profile.target;
+  const subs = activeSubjects();
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Attendance</h1><p class="page-sub">Track presence, targets and projections.</p></div>
+    <button class="btn btn-secondary" data-action="open-simulator">${icon('zap','icon-sm')} Simulator</button>
+  </div>
+
+  <div class="card" style="margin-bottom:28px;">
+    <div class="att-ring-wrap">
+      ${ringSvg(overall.pct, target)}
+      <div style="flex:1;">
+        <div class="stat-num">${overall.pct===null?'—':overall.pct.toFixed(1)+'%'}</div>
+        <div class="page-sub" style="margin-bottom:8px;">${overall.total===0?'Not recorded yet.':`${overall.present} / ${overall.total} classes · target ${target}%`}</div>
+        ${overall.total>0 ? (()=>{ const st=attendanceStatusLabel(overall.pct,target); return `<span class="badge badge-${st.tone}">${st.label}</span>`; })() : ''}
+      </div>
+    </div>
+  </div>
+
+  ${subs.length===0 ? `<div class="card empty">${icon('attendance','icon-lg')}<div class="empty-title">Record your first class</div><div class="empty-sub">Add subjects, then log attendance from here.</div></div>` :
+  `<div class="card">
+    ${subs.map(s=>renderSubjectAttendanceRow(s)).join('')}
+  </div>`}
+  `;
+}
+function ringSvg(pct, target){
+  const r=38, c=2*Math.PI*r;
+  const p = pct===null?0:clamp(pct,0,100);
+  const st = pct===null? null : attendanceStatusLabel(pct,target);
+  const color = st ? `var(--${st.tone})` : 'var(--border)';
+  return `<svg width="96" height="96" viewBox="0 0 96 96" style="flex-shrink:0;">
+    <circle cx="48" cy="48" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="9"/>
+    <circle cx="48" cy="48" r="${r}" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${c-(p/100)*c}" transform="rotate(-90 48 48)"/>
+  </svg>`;
+}
+function renderSubjectAttendanceRow(s){
+  const att = subjectAttendance(s.id);
+  const target = s.target || state.profile.target;
+  const st = att.total>0 ? attendanceStatusLabel(att.pct, target) : null;
+  const intel = attendanceIntel(att.present, att.total, target);
+  let intelText = '';
+  if(intel.kind==='safe') intelText = intel.canMiss>0 ? `You can miss ${intel.canMiss} more class${intel.canMiss===1?'':'es'}.` : `Any absence will drop you below target.`;
+  if(intel.kind==='attention') intelText = `Attend the next ${intel.mustAttend} class${intel.mustAttend===1?'':'es'} to reach ${target}%.`;
+  if(intel.kind==='critical') intelText = `Attend every remaining class to approach ${target}%.`;
+  return `<div class="subject-att-row">
+    <div class="spread" style="margin-bottom:8px;">
+      <div>
+        <div style="font-weight:600;">${esc(s.name)}</div>
+        <div class="page-sub">${esc(s.code)} · ${att.total===0?'Not recorded yet':`${att.present}/${att.total} present`}</div>
+      </div>
+      <div class="row">
+        ${st ? `<span class="badge badge-${st.tone}">${st.label}</span>` : `<span class="badge badge-neutral">NO DATA</span>`}
+        <span style="font-weight:650;min-width:52px;text-align:right;">${att.pct===null?'—':att.pct.toFixed(1)+'%'}</span>
+      </div>
+    </div>
+    ${att.total>0 ? `<div class="progress-track" style="margin-bottom:8px;"><div class="progress-fill" style="width:${clamp(att.pct,0,100)}%;background:${st.tone==='danger'?'var(--danger)':st.tone==='warning'?'var(--warning)':'var(--success)'};"></div></div>` : ''}
+    <div class="spread">
+      <span class="field-hint">${intelText}</span>
+      <div class="row" style="gap:6px;">
+        <button class="btn btn-secondary btn-sm" data-action="mark-absent" data-id="${s.id}">Absent</button>
+        <button class="btn btn-primary btn-sm" data-action="mark-present" data-id="${s.id}">Present</button>
+      </div>
+    </div>
+  </div>`;
+}
+async function markAttendance(subjectId, status){
+  try{ await createEntity('attendance', state.attendance, { subjectId, date: todayISO(), status }); toast(status==='present'?'Marked present':'Marked absent'); route(); }
+  catch(e){ toast(e.message); }
+}
+function openSimulator(){
+  const subs = activeSubjects();
+  if(subs.length===0){ toast('Add a subject first'); return; }
+  openModal({
+    title:'Attendance simulator', submitLabel:'Calculate',
+    bodyHtml: `
+      ${fieldHtml('Subject','subjectId',{ options:subjectOptions(), required:true })}
+      <div class="field-row">
+        ${fieldHtml('Upcoming classes','upcoming',{ type:'number', value:10, required:true })}
+        ${fieldHtml('You will attend','attend',{ type:'number', value:8, required:true })}
+      </div>
+      <div id="sim-result" class="field-hint"></div>
+    `,
+    onSubmit(data){
+      const s = getSubject(data.subjectId);
+      const att = subjectAttendance(s.id);
+      const upcoming = Number(data.upcoming)||0, attend = clamp(Number(data.attend)||0,0,upcoming);
+      const missed = upcoming-attend;
+      const newPresent = att.present+attend, newTotal = att.total+upcoming;
+      const projected = newTotal? newPresent/newTotal*100 : 0;
+      document.getElementById('sim-result').innerHTML =
+        `<div class="card" style="margin-top:6px;background:var(--surface-2);">
+          <div class="page-sub">Projected attendance for ${esc(s.name)}</div>
+          <div class="stat-num" style="font-size:24px;margin:4px 0;">${projected.toFixed(1)}%</div>
+          <div class="field-hint">${newPresent} / ${newTotal} classes · attending ${attend}, missing ${missed}</div>
+        </div>`;
+    }
+  });
+  // override footer button label to 'Calculate' behavior without closing
+  setTimeout(()=>{
+    const form = document.getElementById('modal-form');
+    if(form) form.addEventListener('submit', e=>e.preventDefault());
+  },0);
+}
+
+/* ==================================================================================
+   VIEW: TASKS
+   ================================================================================== */
+let taskFilter = 'today';
+function renderTasks(){
+  const all = state.tasks;
+  const groups = {
+    today: sortTasks(all.filter(taskIsToday)),
+    upcoming: sortTasks(all.filter(t=>t.status!=='Completed' && t.dueDate>todayISO())),
+    overdue: sortTasks(all.filter(taskIsOverdue)),
+    completed: sortTasks(all.filter(t=>t.status==='Completed')).reverse(),
+  };
+  const list = groups[taskFilter]||[];
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Tasks</h1><p class="page-sub">Assignments, study goals and everything due.</p></div>
+    <button class="btn btn-primary" data-action="add-task">${icon('plus','icon-sm')} Add task</button>
+  </div>
+  <div class="tabs" style="margin-bottom:20px;">
+    ${['today','upcoming','overdue','completed'].map(k=>`<div class="tab ${taskFilter===k?'active':''}" data-action="task-filter" data-id="${k}">${k[0].toUpperCase()+k.slice(1)} <span style="color:var(--text-muted);">${groups[k].length}</span></div>`).join('')}
+  </div>
+  ${list.length===0 ? emptyForTaskFilter(taskFilter) : `<div class="card" style="padding:6px var(--sp-5);">${list.map(t=>taskRow(t)).join('')}</div>`}
+  `;
+}
+function emptyForTaskFilter(k){
+  const map = { today:'Nothing pending today.', upcoming:'Nothing scheduled ahead.', overdue:'Nothing overdue.', completed:'No completed tasks yet.' };
+  return `<div class="card empty">${icon('tasks','icon-lg')}<div class="empty-title">Nothing pending</div><div class="empty-sub">${map[k]}</div></div>`;
+}
+function taskRow(t, compact=false){
+  const sub = t.subjectId ? getSubject(t.subjectId) : null;
+  const done = t.status==='Completed';
+  const overdue = taskIsOverdue(t);
+  const prioColor = t.priority==='High'?'danger':t.priority==='Medium'?'warning':'neutral';
+  return `<div class="list-row ${compact?'list-row-tight':''}">
+    <div class="checkbox ${done?'checked':''}" data-action="toggle-task" data-id="${t.id}">${icon('check')}</div>
+    <div style="flex:1;min-width:0;cursor:pointer;" data-action="edit-task" data-id="${t.id}">
+      <div class="task-title ${done?'done':''}" style="font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(t.title)}</div>
+      <div class="page-sub" style="font-size:12px;margin-top:1px;">${sub?esc(sub.code)+' · ':''}${esc(t.category||'')}${t.dueDate?' · '+(overdue?'<span style="color:var(--danger);font-weight:600;">Overdue</span>':fmtDateShort(t.dueDate)):''}${t.dueTime?' · '+fmtTime(t.dueTime):''}</div>
+    </div>
+    ${!compact ? `<span class="badge badge-${prioColor}">${esc(t.priority||'Low')}</span>` : ''}
+  </div>`;
+}
+async function toggleTask(id){
+  const t = state.tasks.find(x=>x.id===id); if(!t) return;
+  const newStatus = t.status==='Completed' ? 'Todo' : 'Completed';
+  try{ await updateEntity('tasks', state.tasks, id, { status:newStatus }); toast(newStatus==='Completed'?'Task completed':'Marked as pending'); route(); }
+  catch(e){ toast(e.message); }
+}
+function openTaskModal(id){
+  const t = id ? state.tasks.find(x=>x.id===id) : null;
+  openModal({
+    title: t? 'Edit task' : 'Add task',
+    submitLabel: t? 'Save changes' : 'Add task',
+    deleteFn: t ? async ()=>{
+      try{ await deleteEntity('tasks', state.tasks, t.id); toast('Task removed'); route(); }
+      catch(e){ toast(e.message); }
+    } : null,
+    bodyHtml: `
+      ${fieldHtml('Title','title',{ value:t?t.title:'', required:true, placeholder:'e.g. Submit DBMS assignment' })}
+      ${fieldHtml('Description','description',{ type:'textarea', value:t?t.description:'' })}
+      ${fieldHtml('Subject','subjectId',{ options:[{value:'',label:'None'}, ...subjectOptions()], value:t?t.subjectId:'' })}
+      <div class="field-row">
+        ${fieldHtml('Category','category',{ options:['Assignment','Study','Exam','Project','Personal'].map(c=>({value:c,label:c})), value:t?t.category:'Assignment' })}
+        ${fieldHtml('Priority','priority',{ options:['Low','Medium','High'].map(c=>({value:c,label:c})), value:t?t.priority:'Medium' })}
+      </div>
+      <div class="field-row">
+        ${fieldHtml('Due date','dueDate',{ type:'date', value:t?t.dueDate:todayISO() })}
+        ${fieldHtml('Due time','dueTime',{ type:'time', value:t?t.dueTime:'' })}
+      </div>
+      ${fieldHtml('Status','status',{ options:['Todo','In Progress','Completed'].map(c=>({value:c,label:c})), value:t?t.status:'Todo' })}
+    `,
+    async onSubmit(data){
+      try{
+        if(t){ await updateEntity('tasks', state.tasks, t.id, data); toast('Task updated'); }
+        else { await createEntity('tasks', state.tasks, data); toast('Task added'); }
+        closeModal(); route();
+      }catch(e){ toast(e.message); }
+    }
+  });
+}
+
+/* ==================================================================================
+   VIEW: STUDY / FOCUS TIMER
+   ================================================================================== */
+let timerInterval = null;
+function renderStudy(){
+  const {start,end} = weekRange();
+  const weekSessions = sessionsInRange(start,end);
+  const monthStart = todayISO().slice(0,8)+'01';
+  const monthSessions = state.sessions.filter(s=>s.date>=monthStart);
+  const todaySessions = state.sessions.filter(s=>s.date===todayISO());
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Study</h1><p class="page-sub">Focus sessions and study time tracking.</p></div>
+    <button class="btn btn-secondary" data-action="add-session">${icon('plus','icon-sm')} Log session</button>
+  </div>
+
+  <div class="glance-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:28px;">
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${(studyMinutes(todaySessions)/60).toFixed(1)}h</div><div class="stat-label">Today</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${(studyMinutes(weekSessions)/60).toFixed(1)}h</div><div class="stat-label">This week</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${(studyMinutes(monthSessions)/60).toFixed(1)}h</div><div class="stat-label">This month</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card" style="text-align:center;padding:var(--sp-8);">
+      <div class="eyebrow" style="margin-bottom:18px;">Focus timer</div>
+      <div id="timer-display" style="font-size:52px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-bottom:18px;">${formatTimer(uiState.timerRemaining)}</div>
+      <div class="row" style="justify-content:center;gap:8px;margin-bottom:20px;">
+        ${[25,50].map(p=>`<div class="tab ${uiState.timerPreset===p&&!uiState.timerRunning?'active':''}" data-action="timer-preset" data-id="${p}">${p} min</div>`).join('')}
+        <div class="tab ${uiState.timerPreset==='custom'?'active':''}" data-action="timer-custom">Custom</div>
+      </div>
+      <div class="row" style="justify-content:center;gap:10px;margin-bottom:20px;">
+        <button class="btn ${uiState.timerRunning?'btn-secondary':'btn-primary'} btn-icon" data-action="${uiState.timerRunning?'timer-pause':'timer-start'}" aria-label="Play/pause">${icon(uiState.timerRunning?'pause':'play')}</button>
+        <button class="btn btn-ghost btn-icon" data-action="timer-reset" aria-label="Reset">${icon('refresh')}</button>
+      </div>
+      <div class="field-row" style="text-align:left;">
+        ${fieldHtml('Link subject','timerSubject',{ options:[{value:'',label:'None'}, ...subjectOptions()], value:uiState.timerLinkSubject })}
+        ${fieldHtml('Link task','timerTask',{ options:[{value:'',label:'None'}, ...state.tasks.filter(t=>t.status!=='Completed').map(t=>({value:t.id,label:t.title}))], value:uiState.timerLinkTask })}
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title" style="margin-bottom:12px;">Recent sessions</div>
+      ${state.sessions.length===0 ? `<div class="card empty">${icon('study','icon-lg')}<div class="empty-title">No sessions logged yet</div></div>` :
+      `<div class="card">${[...state.sessions].reverse().slice(0,8).map(s=>{
+        const sub = getSubject(s.subjectId);
+        return `<div class="list-row spread" style="cursor:pointer;" data-action="edit-session" data-id="${s.id}">
+          <div>
+            <div style="font-weight:600;">${esc(s.topic||(sub?sub.name:'Study session'))}</div>
+            <div class="page-sub">${fmtDateShort(s.date)} · ${sub?esc(sub.code):'No subject'}</div>
+          </div>
+          <span class="badge badge-neutral">${s.durationMin} min</span>
+        </div>`;
+      }).join('')}</div>`}
+    </div>
+  </div>
+  `;
+}
+function formatTimer(sec){ const m=Math.floor(sec/60), s=sec%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+function timerSetPreset(min){
+  timerPause();
+  uiState.timerPreset = min; uiState.timerRemaining = min*60; route();
+}
+function timerCustom(){
+  const val = prompt('Custom focus duration in minutes:', '30');
+  const n = Number(val);
+  if(n>0){ uiState.timerPreset='custom'; timerPause(); uiState.timerRemaining=n*60; route(); }
+}
+function timerStart(){
+  captureTimerLinks();
+  uiState.timerRunning = true;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    uiState.timerRemaining--;
+    const disp = document.getElementById('timer-display');
+    if(disp) disp.textContent = formatTimer(Math.max(uiState.timerRemaining,0));
+    if(uiState.timerRemaining<=0){
+      clearInterval(timerInterval);
+      uiState.timerRunning = false;
+      const mins = (uiState.__lastPreset)||uiState.timerPreset;
+      (async ()=>{
+        try{
+          await createEntity('sessions', state.sessions, { subjectId:uiState.timerLinkSubject||'', topic:'', date:todayISO(), start:'', end:'', durationMin: typeof mins==='number'?mins:25, goal:'', notes:'' });
+          toast('Focus session saved');
+        }catch(e){ toast('Could not save session: '+e.message); }
+        uiState.timerRemaining = (typeof uiState.timerPreset==='number'?uiState.timerPreset:25)*60;
+        if(currentRoute==='study') route();
+      })();
+    }
+  },1000);
+  if(currentRoute==='study') route();
+}
+function captureTimerLinks(){
+  const sSel = document.querySelector('select[name="timerSubject"]');
+  const tSel = document.querySelector('select[name="timerTask"]');
+  if(sSel) uiState.timerLinkSubject = sSel.value;
+  if(tSel) uiState.timerLinkTask = tSel.value;
+  uiState.__lastPreset = typeof uiState.timerPreset==='number' ? uiState.timerPreset : Math.round(uiState.timerRemaining/60);
+}
+function timerPause(){ uiState.timerRunning=false; clearInterval(timerInterval); if(currentRoute==='study') route(); }
+function timerReset(){ timerPause(); uiState.timerRemaining = (typeof uiState.timerPreset==='number'?uiState.timerPreset:25)*60; route(); }
+
+function openSessionModal(id){
+  const s = id ? state.sessions.find(x=>x.id===id) : null;
+  openModal({
+    title: s? 'Edit session' : 'Log study session',
+    submitLabel: s? 'Save changes' : 'Log session',
+    deleteFn: s ? async ()=>{
+      try{ await deleteEntity('sessions', state.sessions, s.id); toast('Session removed'); route(); }
+      catch(e){ toast(e.message); }
+    } : null,
+    bodyHtml: `
+      ${fieldHtml('Subject','subjectId',{ options:[{value:'',label:'None'}, ...subjectOptions()], value:s?s.subjectId:'' })}
+      ${fieldHtml('Topic','topic',{ value:s?s.topic:'' })}
+      <div class="field-row">
+        ${fieldHtml('Date','date',{ type:'date', value:s?s.date:todayISO() })}
+        ${fieldHtml('Duration (min)','durationMin',{ type:'number', value:s?s.durationMin:25, required:true })}
+      </div>
+      ${fieldHtml('Goal','goal',{ value:s?s.goal:'' })}
+      ${fieldHtml('Notes','notes',{ type:'textarea', value:s?s.notes:'' })}
+    `,
+    async onSubmit(data){
+      data.durationMin = Number(data.durationMin)||0;
+      try{
+        if(s){ await updateEntity('sessions', state.sessions, s.id, data); toast('Session updated'); }
+        else { await createEntity('sessions', state.sessions, data); toast('Session logged'); }
+        closeModal(); route();
+      }catch(e){ toast(e.message); }
+    }
+  });
+}
+
+/* ==================================================================================
+   VIEW: PERFORMANCE
+   ================================================================================== */
+function renderPerformance(){
+  const hasData = state.attendance.length || state.sessions.length || state.tasks.length;
+  if(!hasData){
+    return `<div class="page-head"><div><h1 class="page-title">Performance</h1><p class="page-sub">Your academic activity over time.</p></div></div>
+    <div class="card empty">${icon('performance','icon-lg')}<div class="empty-title">Not enough data yet</div><div class="empty-sub">Log attendance, tasks and study sessions to see your performance here.</div></div>`;
+  }
+  const days = [...Array(7)].map((_,i)=>{ const d=new Date(); d.setDate(d.getDate()-(6-i)); return isoFromDate(d); });
+  const studyByDay = days.map(d=> studyMinutes(state.sessions.filter(s=>s.date===d))/60 );
+  const tasksCompleted = state.tasks.filter(t=>t.status==='Completed').length;
+  const overall = overallAttendance();
+
+  return `
+  <div class="page-head"><div><h1 class="page-title">Performance</h1><p class="page-sub">Your academic activity over time.</p></div></div>
+
+  <div class="glance-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:28px;">
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${overall.pct===null?'—':overall.pct.toFixed(1)+'%'}</div><div class="stat-label">Attendance</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${tasksCompleted}</div><div class="stat-label">Tasks completed</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${(studyMinutes(state.sessions)/60).toFixed(0)}h</div><div class="stat-label">Total study hours</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${state.sessions.length}</div><div class="stat-label">Focus sessions</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="section-title" style="margin-bottom:16px;">Study hours — last 7 days</div>
+    ${barChart(days.map(d=>new Date(d+'T00:00:00').toLocaleDateString(undefined,{weekday:'short'})), studyByDay)}
+  </div>
+
+  <div class="card">
+    <div class="section-title" style="margin-bottom:16px;">Attendance by subject</div>
+    ${activeSubjects().length===0 ? `<div class="field-hint">No subjects yet.</div>` :
+      barChart(activeSubjects().map(s=>s.code), activeSubjects().map(s=>subjectAttendance(s.id).pct||0), true)}
+  </div>
+  `;
+}
+function barChart(labels, values, isPercent=false){
+  const max = isPercent ? 100 : Math.max(1, ...values);
+  const w=100/values.length;
+  return `<div style="display:flex;align-items:flex-end;gap:8px;height:140px;">
+    ${values.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;">
+      <span class="field-hint">${isPercent?v.toFixed(0)+'%':v.toFixed(1)}</span>
+      <div style="width:100%;max-width:28px;height:${Math.max((v/max)*100,2)}%;background:var(--accent);border-radius:5px 5px 2px 2px;"></div>
+      <span class="field-hint" style="color:var(--text-muted);">${esc(labels[i])}</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+/* ==================================================================================
+   VIEW: WEEKLY REVIEW
+   ================================================================================== */
+function renderReview(){
+  const {start,end} = weekRange();
+  const sess = sessionsInRange(start,end);
+  const attRecs = state.attendance.filter(a=>a.date>=start && a.date<=end);
+  const present = attRecs.filter(a=>a.status==='present').length;
+  const pct = attRecs.length ? present/attRecs.length*100 : null;
+  const tasksDue = state.tasks.filter(t=>t.dueDate>=start && t.dueDate<=end);
+  const tasksDone = tasksDue.filter(t=>t.status==='Completed').length;
+  const tasksMissed = tasksDue.filter(t=>t.status!=='Completed' && t.dueDate<todayISO()).length;
+  const hasData = attRecs.length || sess.length || tasksDue.length;
+
+  const insights = [];
+  activeSubjects().forEach(s=>{
+    const recs = attRecs.filter(a=>a.subjectId===s.id);
+    if(recs.length===0) return;
+    const p = recs.filter(r=>r.status==='present').length/recs.length*100;
+    const target = s.target||state.profile.target;
+    if(p < target) insights.push(`${s.name} attendance is below your target this week (${p.toFixed(0)}% vs ${target}%).`);
+  });
+  if(tasksDue.length>0) insights.push(`You completed ${Math.round(tasksDone/tasksDue.length*100)}% of this week's tasks.`);
+  if(sess.length>0) insights.push(`You logged ${(studyMinutes(sess)/60).toFixed(1)} hours of focused study this week.`);
+  if(pct!==null && pct>=state.profile.target) insights.push(`You're on track with attendance this week.`);
+
+  return `
+  <div class="page-head"><div><h1 class="page-title">Weekly Review</h1><p class="page-sub">${fmtDateShort(start)} – ${fmtDateShort(end)}</p></div></div>
+  ${!hasData ? `<div class="card empty">${icon('review','icon-lg')}<div class="empty-title">Nothing to review yet</div><div class="empty-sub">Come back after logging classes, tasks or study time.</div></div>` : `
+  <div class="glance-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${present}</div><div class="stat-label">Classes attended</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${pct===null?'—':pct.toFixed(0)+'%'}</div><div class="stat-label">Weekly attendance</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${(studyMinutes(sess)/60).toFixed(1)}h</div><div class="stat-label">Study hours</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${tasksDone}</div><div class="stat-label">Tasks completed</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${tasksMissed}</div><div class="stat-label">Tasks missed</div></div>
+    <div class="glance-mini"><div class="stat-num" style="font-size:22px;">${sess.length}</div><div class="stat-label">Focus sessions</div></div>
+  </div>
+  <div class="card">
+    <div class="section-title" style="margin-bottom:12px;">Insights</div>
+    ${insights.length===0 ? `<div class="field-hint">No notable patterns this week.</div>` :
+      `<div class="stack" style="gap:10px;">${insights.map(i=>`<div class="row" style="gap:10px;align-items:flex-start;">${icon('zap','icon-sm')}<span style="font-size:13.5px;">${esc(i)}</span></div>`).join('')}</div>`}
+  </div>`}
+  `;
+}
+
+/* ==================================================================================
+   VIEW: EXAMS
+   ================================================================================== */
+function renderExams(){
+  const upcoming = state.exams.filter(e=>e.date>=todayISO()).sort((a,b)=>a.date.localeCompare(b.date));
+  const past = state.exams.filter(e=>e.date<todayISO()).sort((a,b)=>b.date.localeCompare(a.date));
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Exams</h1><p class="page-sub">Upcoming assessments and preparation.</p></div>
+    <button class="btn btn-primary" data-action="add-exam">${icon('plus','icon-sm')} Add exam</button>
+  </div>
+  ${upcoming.length===0 ? `<div class="card empty">${icon('exams','icon-lg')}<div class="empty-title">No upcoming exams</div></div>` :
+  `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-bottom:28px;">
+    ${upcoming.map(e=>{
+      const sub = getSubject(e.subjectId); const d = daysBetween(e.date);
+      return `<div class="card" style="cursor:pointer;" data-action="edit-exam" data-id="${e.id}">
+        <div class="spread" style="margin-bottom:10px;"><span class="eyebrow">${esc(sub?sub.name:'')}</span><span class="badge badge-accent">${d<=0?'Today':d+'d'}</span></div>
+        <div style="font-weight:650;font-size:15px;margin-bottom:4px;">${esc(e.type||'Exam')}</div>
+        <div class="page-sub" style="margin-bottom:12px;">${fmtDateShort(e.date)}${e.time?' · '+fmtTime(e.time):''}</div>
+        <div class="progress-track" style="margin-bottom:4px;"><div class="progress-fill" style="width:${e.prep||0}%;"></div></div>
+        <div class="field-hint">${e.prep||0}% prepared</div>
+      </div>`;
+    }).join('')}
+  </div>`}
+  ${past.length ? `<div class="section-title" style="margin-bottom:12px;">Past exams</div><div class="card">${past.map(e=>{
+    const sub = getSubject(e.subjectId);
+    return `<div class="list-row spread" style="cursor:pointer;" data-action="edit-exam" data-id="${e.id}"><span>${esc(sub?sub.name:'')} — ${esc(e.type)}</span><span class="page-sub">${fmtDateShort(e.date)}</span></div>`;
+  }).join('')}</div>` : ''}
+  `;
+}
+function openExamModal(id){
+  const e = id ? state.exams.find(x=>x.id===id) : null;
+  openModal({
+    title: e? 'Edit exam' : 'Add exam',
+    submitLabel: e? 'Save changes' : 'Add exam',
+    deleteFn: e ? async ()=>{
+      try{ await deleteEntity('exams', state.exams, e.id); toast('Exam removed'); route(); }
+      catch(err){ toast(err.message); }
+    } : null,
+    bodyHtml: `
+      ${fieldHtml('Subject','subjectId',{ options:subjectOptions(), value:e?e.subjectId:'', required:true })}
+      ${fieldHtml('Exam type','type',{ value:e?e.type:'', placeholder:'e.g. Mid-semester', required:true })}
+      <div class="field-row">
+        ${fieldHtml('Date','date',{ type:'date', value:e?e.date:todayISO(), required:true })}
+        ${fieldHtml('Time','time',{ type:'time', value:e?e.time:'' })}
+      </div>
+      ${fieldHtml('Syllabus','syllabus',{ type:'textarea', value:e?e.syllabus:'' })}
+      ${fieldHtml('Preparation (%)','prep',{ type:'number', value:e?e.prep:0 })}
+      ${fieldHtml('Notes','notes',{ type:'textarea', value:e?e.notes:'' })}
+    `,
+    async onSubmit(data){
+      data.prep = clamp(Number(data.prep)||0,0,100);
+      try{
+        if(e){ await updateEntity('exams', state.exams, e.id, data); toast('Exam updated'); }
+        else { await createEntity('exams', state.exams, data); toast('Exam added'); }
+        closeModal(); route();
+      }catch(err){ toast(err.message); }
+    }
+  });
+}
+
+/* ==================================================================================
+   VIEW: CALENDAR
+   ================================================================================== */
+function renderCalendar(){
+  const cursor = uiState.calendarCursor;
+  const year = cursor.getFullYear(), month = cursor.getMonth();
+  const first = new Date(year, month, 1);
+  const startOffset = (first.getDay()+6)%7; // Monday=0
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const cells = [];
+  for(let i=0;i<startOffset;i++) cells.push(null);
+  for(let d=1; d<=daysInMonth; d++) cells.push(d);
+
+  const selISO = uiState.calendarSelected;
+  const eventsForDate = getEventsForDate(selISO);
+
+  return `
+  <div class="page-head"><div><h1 class="page-title">Calendar</h1><p class="page-sub">Everything scheduled, in one view.</p></div></div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="spread" style="margin-bottom:16px;">
+      <button class="btn btn-ghost btn-icon" data-action="calendar-prev">${icon('chevronLeft')}</button>
+      <span class="section-title">${first.toLocaleDateString(undefined,{month:'long', year:'numeric'})}</span>
+      <button class="btn btn-ghost btn-icon" data-action="calendar-next">${icon('chevronRight')}</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;">
+      ${['M','T','W','T','F','S','S'].map(d=>`<div style="text-align:center;font-size:11px;font-weight:650;color:var(--text-muted);">${d}</div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">
+      ${cells.map(d=>{
+        if(!d) return `<div></div>`;
+        const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const evs = getEventsForDate(iso);
+        const isToday = iso===todayISO(); const isSel = iso===selISO;
+        return `<div data-action="calendar-day" data-id="${iso}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:9px;cursor:pointer;gap:3px;
+          background:${isSel?'var(--accent)':isToday?'var(--surface-2)':'transparent'};color:${isSel?'#fff':'var(--text)'};font-size:12.5px;font-weight:${isToday||isSel?'700':'500'};">
+          <span>${d}</span>
+          ${evs.length? `<span class="dot" style="background:${isSel?'#fff':'var(--accent)'};"></span>` : ''}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+  <div class="section-title" style="margin-bottom:12px;">${fmtDateLong(selISO)}</div>
+  ${eventsForDate.length===0 ? `<div class="card empty" style="padding:24px;">${icon('calendar','icon-lg')}<div class="empty-title">Nothing scheduled</div></div>` :
+  `<div class="card">${eventsForDate.map(ev=>`<div class="list-row spread"><div class="row"><span class="badge badge-${ev.tone}">${ev.type}</span><span>${esc(ev.label)}</span></div><span class="page-sub">${ev.time?fmtTime(ev.time):''}</span></div>`).join('')}</div>`}
+  `;
+}
+function getEventsForDate(iso){
+  const d = new Date(iso+'T00:00:00'); const dow = d.getDay();
+  const events = [];
+  if(dow!==0){
+    const dayCode = DAYS[dow-1];
+    classesForDay(dayCode).forEach(c=>{ const s=getSubject(c.subjectId); events.push({ type:'Class', tone:'info', label:`${s?s.name:'Class'}`, time:c.start }); });
+  }
+  state.tasks.filter(t=>t.dueDate===iso).forEach(t=> events.push({ type:'Task', tone:'accent', label:t.title, time:t.dueTime }));
+  state.exams.filter(e=>e.date===iso).forEach(e=>{ const s=getSubject(e.subjectId); events.push({ type:'Exam', tone:'danger', label:`${s?s.name:''} ${e.type||''}`, time:e.time }); });
+  state.sessions.filter(s=>s.date===iso).forEach(s=> events.push({ type:'Study', tone:'success', label:s.topic||'Study session', time:s.start }));
+  return events.sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
+}
+
+/* ==================================================================================
+   VIEW: GOALS
+   ================================================================================== */
+function renderGoals(){
+  const list = state.goals;
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Goals</h1><p class="page-sub">Targets you're working toward this term.</p></div>
+    <button class="btn btn-primary" data-action="add-goal">${icon('plus','icon-sm')} Add goal</button>
+  </div>
+  ${list.length===0 ? `<div class="card empty">${icon('goals','icon-lg')}<div class="empty-title">Set your first academic goal</div></div>` :
+  `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+    ${list.map(g=>{
+      const pct = g.target>0 ? clamp(g.current/g.target*100,0,100) : 0;
+      return `<div class="card">
+        <div class="spread" style="margin-bottom:6px;"><span style="font-weight:650;">${esc(g.title)}</span>${g.deadline?`<span class="field-hint">${fmtDateShort(g.deadline)}</span>`:''}</div>
+        <div class="page-sub" style="margin-bottom:14px;">${esc(g.description||'')}</div>
+        <div class="spread" style="margin-bottom:6px;"><span class="field-hint">${g.current} / ${g.target} ${esc(g.unit||'')}</span><span style="font-weight:650;">${pct.toFixed(0)}%</span></div>
+        <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:${pct}%;"></div></div>
+        <div class="row" style="gap:8px;">
+          <button class="btn btn-secondary btn-sm" style="flex:1;" data-action="goal-progress" data-id="${g.id}" data-delta="-1">−</button>
+          <button class="btn btn-secondary btn-sm" style="flex:1;" data-action="goal-progress" data-id="${g.id}" data-delta="1">+</button>
+          <button class="btn btn-ghost btn-sm btn-icon" data-action="edit-goal" data-id="${g.id}">${icon('edit','icon-sm')}</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`}
+  `;
+}
+async function updateGoalProgress(id, delta){
+  const g = state.goals.find(x=>x.id===id); if(!g) return;
+  const newCurrent = clamp((Number(g.current)||0) + Number(delta), 0, g.target*2);
+  try{ await updateEntity('goals', state.goals, id, { current:newCurrent }); route(); }
+  catch(e){ toast(e.message); }
+}
+function openGoalModal(id){
+  const g = id ? state.goals.find(x=>x.id===id) : null;
+  openModal({
+    title: g? 'Edit goal' : 'Add goal',
+    submitLabel: g? 'Save changes' : 'Add goal',
+    deleteFn: g ? async ()=>{
+      try{ await deleteEntity('goals', state.goals, g.id); toast('Goal removed'); route(); }
+      catch(e){ toast(e.message); }
+    } : null,
+    bodyHtml: `
+      ${fieldHtml('Title','title',{ value:g?g.title:'', required:true, placeholder:'e.g. Study 15 hours this week' })}
+      ${fieldHtml('Description','description',{ type:'textarea', value:g?g.description:'' })}
+      <div class="field-row">
+        ${fieldHtml('Target','target',{ type:'number', value:g?g.target:10, required:true })}
+        ${fieldHtml('Unit','unit',{ value:g?g.unit:'hours', placeholder:'hours, tasks, %' })}
+      </div>
+      <div class="field-row">
+        ${fieldHtml('Current progress','current',{ type:'number', value:g?g.current:0 })}
+        ${fieldHtml('Deadline','deadline',{ type:'date', value:g?g.deadline:'' })}
+      </div>
+    `,
+    async onSubmit(data){
+      data.target = Number(data.target)||1; data.current = Number(data.current)||0;
+      try{
+        if(g){ await updateEntity('goals', state.goals, g.id, data); toast('Goal updated'); }
+        else { await createEntity('goals', state.goals, data); toast('Goal added'); }
+        closeModal(); route();
+      }catch(e){ toast(e.message); }
+    }
+  });
+}
+
+/* ==================================================================================
+   VIEW: PROJECTS
+   ================================================================================== */
+const PROJECT_STATUSES = ['Idea','Planning','Building','Testing','Completed'];
+function renderProjects(){
+  const list = state.projects;
+  return `
+  <div class="page-head">
+    <div><h1 class="page-title">Projects</h1><p class="page-sub">Personal builds outside coursework.</p></div>
+    <button class="btn btn-primary" data-action="add-project">${icon('plus','icon-sm')} Add project</button>
+  </div>
+  ${list.length===0 ? `<div class="card empty">${icon('projects','icon-lg')}<div class="empty-title">No projects yet</div><div class="empty-sub">Track what you're building alongside coursework.</div></div>` :
+  `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));">
+    ${list.map(p=>`<div class="card">
+      <div class="spread" style="margin-bottom:8px;"><span style="font-weight:650;">${esc(p.name)}</span><span class="badge badge-neutral">${esc(p.status)}</span></div>
+      <div class="page-sub" style="margin-bottom:10px;">${esc(p.description||'')}</div>
+      ${p.tech ? `<div class="field-hint" style="margin-bottom:12px;">${esc(p.tech)}</div>` : ''}
+      <div class="row" style="gap:8px;margin-bottom:12px;">
+        ${p.github?`<a href="${esc(p.github)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon('external','icon-sm')} GitHub</a>`:''}
+        ${p.live?`<a href="${esc(p.live)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon('external','icon-sm')} Live</a>`:''}
+      </div>
+      <button class="btn btn-ghost btn-sm btn-block" data-action="edit-project" data-id="${p.id}">${icon('edit','icon-sm')} Edit</button>
+    </div>`).join('')}
+  </div>`}
+  `;
+}
+function openProjectModal(id){
+  const p = id ? state.projects.find(x=>x.id===id) : null;
+  openModal({
+    title: p? 'Edit project' : 'Add project',
+    submitLabel: p? 'Save changes' : 'Add project',
+    deleteFn: p ? async ()=>{
+      try{ await deleteEntity('projects', state.projects, p.id); toast('Project removed'); route(); }
+      catch(e){ toast(e.message); }
+    } : null,
+    bodyHtml: `
+      ${fieldHtml('Project name','name',{ value:p?p.name:'', required:true })}
+      ${fieldHtml('Description','description',{ type:'textarea', value:p?p.description:'' })}
+      ${fieldHtml('Technology','tech',{ value:p?p.tech:'', placeholder:'e.g. React, Node, PostgreSQL' })}
+      <div class="field-row">
+        ${fieldHtml('Status','status',{ options:PROJECT_STATUSES.map(s=>({value:s,label:s})), value:p?p.status:'Idea' })}
+        ${fieldHtml('Deadline','deadline',{ type:'date', value:p?p.deadline:'' })}
+      </div>
+      ${fieldHtml('GitHub URL','github',{ value:p?p.github:'' })}
+      ${fieldHtml('Live URL','live',{ value:p?p.live:'' })}
+      ${fieldHtml('Notes','notes',{ type:'textarea', value:p?p.notes:'' })}
+    `,
+    async onSubmit(data){
+      try{
+        if(p){ await updateEntity('projects', state.projects, p.id, data); toast('Project updated'); }
+        else { await createEntity('projects', state.projects, data); toast('Project added'); }
+        closeModal(); route();
+      }catch(e){ toast(e.message); }
+    }
+  });
+}
+
+/* ==================================================================================
+   VIEW: SETTINGS
+   ================================================================================== */
+function renderSettings(){
+  const p = state.profile;
+  return `
+  <div class="page-head"><div><h1 class="page-title">Settings</h1><p class="page-sub">${esc(p.email||'')}</p></div></div>
+
+  <div class="two-col">
+    <div class="stack" style="gap:24px;">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:16px;">Profile</div>
+        <form id="settings-form" class="stack" style="gap:14px;">
+          ${fieldHtml('Name','name',{ value:p.name })}
+          ${fieldHtml('College','college',{ value:p.college })}
+          <div class="field-row">${fieldHtml('Course','course',{ value:p.course })}${fieldHtml('Branch','branch',{ value:p.branch })}</div>
+          <div class="field-row">${fieldHtml('Year','year',{ value:p.year })}${fieldHtml('Semester','semester',{ value:p.semester })}</div>
+          ${fieldHtml('Section','section',{ value:p.section })}
+          ${fieldHtml('Default attendance target (%)','target',{ type:'number', value:p.target })}
+          <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Save profile</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-bottom:16px;">Appearance</div>
+        <div class="tabs">
+          ${['system','light','dark'].map(t=>`<div class="tab ${p.theme===t?'active':''}" data-action="set-theme" data-id="${t}">${t[0].toUpperCase()+t.slice(1)}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="stack" style="gap:24px;">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:6px;">Your data</div>
+        <p class="page-sub" style="margin-bottom:16px;">Stored securely in the cloud, tied to your account.</p>
+        <div class="stack" style="gap:8px;">
+          <button class="btn btn-secondary btn-block" data-action="export-data">${icon('download','icon-sm')} Export data</button>
+          <label class="btn btn-secondary btn-block" style="cursor:pointer;">
+            ${icon('upload','icon-sm')} Import data
+            <input type="file" accept="application/json" id="import-input" style="display:none;">
+          </label>
+          <button class="btn btn-danger btn-block" data-action="reset-data">${icon('trash','icon-sm')} Reset all data</button>
+          <button class="btn btn-ghost btn-block" data-action="logout">Log out</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:10px;">Overview</div>
+        <div class="stack" style="gap:2px;">
+          ${[['Subjects',state.subjects.length],['Classes',state.classes.length],['Tasks',state.tasks.length],['Attendance records',state.attendance.length],['Study sessions',state.sessions.length],['Exams',state.exams.length],['Goals',state.goals.length],['Projects',state.projects.length]]
+            .map(([l,v])=>`<div class="spread" style="padding:6px 0;"><span class="page-sub">${l}</span><span style="font-weight:600;">${v}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+async function exportData(){
+  const blob = new Blob([JSON.stringify(state,null,2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `student-command-center-${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('Data exported');
+}
+async function importData(file){
+  const reader = new FileReader();
+  reader.onload = async ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(parsed.profile) await updateProfile(parsed.profile);
+      const idMap = {};
+      for(const s of (parsed.subjects||[])){
+        const { id:oldId, ...rest } = s;
+        try{ const created = await createEntity('subjects', state.subjects, rest); idMap[oldId] = created.id; }catch(e){}
+      }
+      for(const key of ['classes','attendance','tasks','sessions','exams']){
+        for(const item of (parsed[key]||[])){
+          const { id, subjectId, ...rest } = item;
+          const newSubjectId = subjectId ? (idMap[subjectId]||'') : '';
+          try{ await createEntity(key, state[key], Object.assign({}, rest, { subjectId:newSubjectId })); }catch(e){}
+        }
+      }
+      for(const key of ['goals','projects']){
+        for(const item of (parsed[key]||[])){
+          const { id, ...rest } = item;
+          try{ await createEntity(key, state[key], rest); }catch(e){}
+        }
+      }
+      toast('Data imported'); route();
+    }catch(e){ toast('Could not read that file'); }
+  };
+  reader.readAsText(file);
+}
+async function resetData(){
+  if(!confirm('This permanently deletes all your data. Continue?')) return;
+  try{
+    for(const key of ['classes','attendance','tasks','sessions','exams','goals','projects','subjects']){
+      const ids = state[key].map(x=>x.id);
+      for(const id of ids){ await deleteEntity(key, state[key], id); }
+    }
+    await updateProfile({ name:'', college:'', course:'', branch:'', year:'', semester:'', section:'', target:75 });
+    toast('All data reset'); route();
+  }catch(e){ toast(e.message); }
+}
+async function logout(){
+  try{ await sb.auth.signOut(); }catch(e){}
+  location.reload();
+}
+
+/* ==================================================================================
+   GLOBAL EVENT DELEGATION
+   ================================================================================== */
+document.addEventListener('click', (e)=>{
+  const t = e.target.closest('[data-action]');
+  if(!t) return;
+  const action = t.dataset.action, id = t.dataset.id;
+  switch(action){
+    case 'theme-toggle': cycleTheme(); break;
+    case 'open-more': toggleMoreSheet(); break;
+    case 'close-more': closeMoreSheet(); break;
+    case 'modal-close': closeModal(); break;
+    case 'modal-delete': if(currentModal && currentModal.deleteFn && confirm('Delete this? This cannot be undone.')){ currentModal.deleteFn(); closeModal(); } break;
+    case 'modal-duplicate': if(currentModal && currentModal.duplicateFn){ currentModal.duplicateFn(); closeModal(); } break;
+
+    case 'add-class': openClassModal(); break;
+    case 'edit-class': openClassModal(id); break;
+    case 'set-day': uiState.timetableDay = id; route(); break;
+
+    case 'add-subject': openSubjectModal(); break;
+    case 'edit-subject': openSubjectModal(id); break;
+    case 'delete-subject': if(confirm('Delete this subject? Related timetable and attendance data will also be removed.')){
+      (async ()=>{
+        try{
+          await deleteEntity('subjects', state.subjects, id);
+          state.classes = state.classes.filter(c=>c.subjectId!==id);
+          state.attendance = state.attendance.filter(a=>a.subjectId!==id);
+          toast('Subject removed'); route();
+        }catch(err){ toast(err.message); }
+      })();
+    } break;
+    case 'archive-subject': (async ()=>{ try{ await updateEntity('subjects', state.subjects, id, { archived:true }); toast('Subject archived'); route(); }catch(err){ toast(err.message); } })(); break;
+    case 'unarchive-subject': (async ()=>{ try{ await updateEntity('subjects', state.subjects, id, { archived:false }); toast('Subject restored'); route(); }catch(err){ toast(err.message); } })(); break;
+
+    case 'mark-present': markAttendance(id,'present'); break;
+    case 'mark-absent': markAttendance(id,'absent'); break;
+    case 'open-simulator': openSimulator(); break;
+
+    case 'add-task': openTaskModal(); break;
+    case 'edit-task': openTaskModal(id); break;
+    case 'toggle-task': toggleTask(id); break;
+    case 'task-filter': taskFilter = id; route(); break;
+
+    case 'add-session': openSessionModal(); break;
+    case 'edit-session': openSessionModal(id); break;
+    case 'timer-start': timerStart(); break;
+    case 'timer-pause': timerPause(); break;
+    case 'timer-reset': timerReset(); break;
+    case 'timer-preset': timerSetPreset(Number(id)); break;
+    case 'timer-custom': timerCustom(); break;
+
+    case 'add-exam': openExamModal(); break;
+    case 'edit-exam': openExamModal(id); break;
+
+    case 'calendar-prev': uiState.calendarCursor.setMonth(uiState.calendarCursor.getMonth()-1); route(); break;
+    case 'calendar-next': uiState.calendarCursor.setMonth(uiState.calendarCursor.getMonth()+1); route(); break;
+    case 'calendar-day': uiState.calendarSelected = id; route(); break;
+
+    case 'add-goal': openGoalModal(); break;
+    case 'edit-goal': openGoalModal(id); break;
+    case 'goal-progress': updateGoalProgress(id, Number(t.dataset.delta)); break;
+
+    case 'add-project': openProjectModal(); break;
+    case 'edit-project': openProjectModal(id); break;
+
+    case 'set-theme': (async ()=>{ try{ await updateProfile({ theme:id }); applyTheme(); route(); }catch(err){ toast(err.message); } })(); break;
+    case 'export-data': exportData(); break;
+    case 'reset-data': resetData(); break;
+    case 'logout': logout(); break;
+    case 'google-login': (async ()=>{
+      try{
+        const { error } = await sb.auth.signInWithOAuth({
+          provider:'google',
+          options:{ redirectTo: window.location.origin + window.location.pathname }
+        });
+        if(error) toast(error.message);
+      }catch(e){ toast(e.message); }
+    })(); break;
+  }
+});
+document.addEventListener('click', (e)=>{
+  if(e.target.id==='modal-overlay') closeModal();
+  if(e.target.id==='more-sheet') closeMoreSheet();
+});
+document.addEventListener('submit', async (e)=>{
+  if(e.target.id==='modal-form'){
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    if(currentModal && currentModal.onSubmit) currentModal.onSubmit(data);
+  }
+  if(e.target.id==='settings-form'){
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    data.target = Number(data.target)||75;
+    try{
+      await updateProfile(data);
+      toast('Profile saved'); renderShell(); route();
+    }catch(err){ toast(err.message); }
+  }
+  if(e.target.id==='auth-form'){
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const errEl = document.getElementById('auth-error');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if(errEl){ errEl.style.display='none'; errEl.style.color='var(--danger)'; }
+    if(submitBtn) submitBtn.disabled = true;
+    try{
+      if(authMode==='signup'){
+        if(String(data.password||'').length < 6) throw new Error('Password must be at least 6 characters');
+        const { data: signData, error } = await sb.auth.signUp({
+          email: data.email, password: data.password,
+          options:{ data:{ name: data.name||'' } }
+        });
+        if(error) throw new Error(error.message);
+        if(!signData.session){
+          if(errEl){
+            errEl.style.color='var(--success)';
+            errEl.textContent = 'Account created — check your email to confirm, then log in.';
+            errEl.style.display='block';
+          }
+          authMode='login'; showAuthGate();
+          return;
+        }
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email:data.email, password:data.password });
+        if(error) throw new Error(error.message);
+      }
+      hideAuthGate();
+      await bootApp();
+    }catch(err){
+      if(errEl){ errEl.textContent = err.message; errEl.style.display='block'; }
+    }finally{
+      if(submitBtn) submitBtn.disabled = false;
+    }
+  }
+});
+document.addEventListener('click', (e)=>{
+  const t = e.target.closest('[data-action="auth-mode"]');
+  if(t){ authMode = t.dataset.id; showAuthGate(); }
+});
+document.addEventListener('change', (e)=>{
+  if(e.target.id==='import-input' && e.target.files[0]) importData(e.target.files[0]);
+});
+
+/* ==================================================================================
+   AUTH GATE (login / signup)
+   ================================================================================== */
+let authMode = 'login';
+function authGateHtml(mode){
+  return `
+  <div id="auth-gate" style="position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
+    <div class="card" style="width:100%;max-width:380px;">
+      <div class="brand" style="margin-bottom:24px;justify-content:center;">
+        <div class="brand-mark">SC</div>
+        <div><div class="brand-name">Command Center</div><div class="brand-sub">Your academic OS</div></div>
+      </div>
+      <div class="tabs" style="width:100%;margin-bottom:20px;">
+        <div class="tab ${mode==='login'?'active':''}" style="flex:1;text-align:center;" data-action="auth-mode" data-id="login">Log in</div>
+        <div class="tab ${mode==='signup'?'active':''}" style="flex:1;text-align:center;" data-action="auth-mode" data-id="signup">Sign up</div>
+      </div>
+      <button type="button" class="btn btn-secondary btn-block" data-action="google-login" style="margin-bottom:16px;gap:10px;">
+        <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.71v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.61Z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.19l-2.9-2.26c-.81.54-1.85.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.95 10.69A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.16.28-1.69V4.98H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.02l2.97-2.33Z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.98l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58Z"/></svg>
+        Continue with Google
+      </button>
+      <div class="row" style="margin-bottom:16px;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <span class="field-hint" style="padding:0 4px;">or</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <form id="auth-form" class="stack" style="gap:14px;">
+        ${mode==='signup' ? fieldHtml('Name','name',{ required:true, placeholder:'Your name' }) : ''}
+        ${fieldHtml('Email','email',{ type:'email', required:true, placeholder:'you@example.com' })}
+        ${fieldHtml('Password','password',{ type:'password', required:true, placeholder:mode==='signup'?'At least 6 characters':'' })}
+        <div id="auth-error" style="color:var(--danger);font-size:12.5px;display:none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">${mode==='login'?'Log in':'Create account'}</button>
+      </form>
+    </div>
+  </div>`;
+}
+function showAuthGate(){
+  const existing = document.getElementById('auth-gate');
+  if(existing) existing.remove();
+  document.body.insertAdjacentHTML('beforeend', authGateHtml(authMode));
+}
+function hideAuthGate(){
+  const el = document.getElementById('auth-gate');
+  if(el) el.remove();
+}
+function authRequired(){
+  authMode = 'login';
+  showAuthGate();
+}
+
+/* ==================================================================================
+   BOOTSTRAP
+   ================================================================================== */
+async function bootApp(){
+  try{
+    const profile = await loadProfile();
+    const [subjects, classes, attendance, tasks, sessions, exams, goals, projects] = await Promise.all([
+      fetchAll('subjects'), fetchAll('classes'), fetchAll('attendance'), fetchAll('tasks'),
+      fetchAll('sessions'), fetchAll('exams'), fetchAll('goals'), fetchAll('projects'),
+    ]);
+    state.profile = Object.assign(defaultState().profile, profile);
+    state.subjects=subjects; state.classes=classes; state.attendance=attendance; state.tasks=tasks;
+    state.sessions=sessions; state.exams=exams; state.goals=goals; state.projects=projects;
+    applyTheme();
+    route();
+  }catch(e){
+    if(e.message === 'auth'){ authRequired(); }
+    else{ toast('Could not load your data. Pull to refresh and try again.'); }
+  }
+}
+
+/* ==================================================================================
+   INIT
+   ================================================================================== */
+applyTheme();
+let booted = false;
+async function tryBoot(){
+  if(booted) return;
+  const { data } = await sb.auth.getSession();
+  if(data.session){
+    booted = true;
+    hideAuthGate();
+    if(window.location.search.includes('code=')){
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    }
+    await bootApp();
+  }
+}
+sb.auth.onAuthStateChange((event)=>{
+  if(event === 'SIGNED_IN'){ tryBoot(); }
+  if(event === 'SIGNED_OUT'){ booted = false; authRequired(); }
+});
+(async ()=>{
+  await tryBoot();
+  if(!booted){ authMode = 'login'; showAuthGate(); }
+})();
+setInterval(()=>{ if(currentRoute==='today' || currentRoute==='timetable') route(); }, 60000);
+</script>
 </body>
 </html>
