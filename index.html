@@ -2329,7 +2329,10 @@ async function bootApp(){
     route();
   }catch(e){
     if(e.message === 'auth'){ authRequired(); }
-    else{ toast('Could not load your data. Pull to refresh and try again.'); }
+    else{
+      console.error('bootApp failed:', e);
+      toast(e.message ? ('Could not load data: ' + e.message) : 'Could not load your data. Pull to refresh and try again.');
+    }
   }
 }
 
@@ -2338,16 +2341,22 @@ async function bootApp(){
    ================================================================================== */
 applyTheme();
 let booted = false;
+let booting = false;
 async function tryBoot(){
-  if(booted) return;
-  const { data } = await sb.auth.getSession();
-  if(data.session){
-    booted = true;
-    hideAuthGate();
-    if(window.location.search.includes('code=')){
-      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+  if(booted || booting) return;
+  booting = true;
+  try{
+    const { data } = await sb.auth.getSession();
+    if(data.session){
+      booted = true;
+      hideAuthGate();
+      if(window.location.search.includes('code=')){
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+      }
+      await bootApp();
     }
-    await bootApp();
+  } finally {
+    booting = false;
   }
 }
 sb.auth.onAuthStateChange((event)=>{
