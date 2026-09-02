@@ -691,8 +691,15 @@ async function deleteEntity(resourceKey, arr, id){
 async function loadProfile(){
   const uidVal = await currentUserId();
   const { data: sessionData } = await sb.auth.getSession();
-  const { data, error } = await sb.from('profiles').select('*').eq('id', uidVal).single();
+  let { data, error } = await sb.from('profiles').select('*').eq('id', uidVal).maybeSingle();
   if(error) throw new Error(error.message);
+  if(!data){
+    // No profile row yet (e.g. it was created before the signup trigger existed,
+    // or got wiped by a schema re-run) -- self-heal by creating one now.
+    const created = await sb.from('profiles').insert({ id: uidVal, name:'' }).select().single();
+    if(created.error) throw new Error(created.error.message);
+    data = created.data;
+  }
   return {
     name:data.name||'', college:data.college||'', course:data.course||'', branch:data.branch||'',
     year:data.year||'', semester:data.semester||'', section:data.section||'',
