@@ -2234,10 +2234,11 @@ document.addEventListener('submit', async (e)=>{
     if(submitBtn) submitBtn.disabled = true;
     try{
       if(authMode==='signup'){
+        if(!selectedRoster) throw new Error('Pick your name from the list first');
         if(String(data.password||'').length < 6) throw new Error('Password must be at least 6 characters');
         const { data: signData, error } = await sb.auth.signUp({
           email: data.email, password: data.password,
-          options:{ data:{ name: data.name||'' } }
+          options:{ data:{ name: selectedRoster.name, roll_no: selectedRoster.roll_no } }
         });
         if(error) throw new Error(error.message);
         if(!signData.session){
@@ -2246,7 +2247,7 @@ document.addEventListener('submit', async (e)=>{
             errEl.textContent = 'Account created — check your email to confirm, then log in.';
             errEl.style.display='block';
           }
-          authMode='login'; showAuthGate();
+          authMode='login'; selectedRoster=null; showAuthGate();
           return;
         }
       } else {
@@ -2264,7 +2265,24 @@ document.addEventListener('submit', async (e)=>{
 });
 document.addEventListener('click', (e)=>{
   const t = e.target.closest('[data-action="auth-mode"]');
-  if(t){ authMode = t.dataset.id; showAuthGate(); }
+  if(t){ authMode = t.dataset.id; selectedRoster = null; showAuthGate(); }
+});
+document.addEventListener('click', (e)=>{
+  const pick = e.target.closest('[data-action="roster-pick"]');
+  if(pick){
+    const roll = Number(pick.dataset.id);
+    selectedRoster = rosterList.find(r => r.roll_no === roll) || null;
+    showAuthGate();
+    return;
+  }
+  const change = e.target.closest('[data-action="roster-change"]');
+  if(change){ selectedRoster = null; showAuthGate(); }
+});
+document.addEventListener('input', (e)=>{
+  if(e.target.id==='roster-search'){
+    const resultsEl = document.getElementById('roster-results');
+    if(resultsEl) resultsEl.innerHTML = rosterResultsHtml(e.target.value);
+  }
 });
 document.addEventListener('change', (e)=>{
   if(e.target.id==='import-input' && e.target.files[0]) importData(e.target.files[0]);
@@ -2274,6 +2292,34 @@ document.addEventListener('change', (e)=>{
    AUTH GATE (login / signup)
    ================================================================================== */
 let authMode = 'login';
+let rosterList = [];
+let rosterLoading = false;
+let selectedRoster = null; // { roll_no, name, batch }
+
+async function loadRosterForSignup(){
+  rosterLoading = true;
+  try{
+    const { data, error } = await sb.from('roster').select('*').is('claimed_by', null).order('roll_no');
+    rosterList = (!error && data) ? data : [];
+  }catch(e){ rosterList = []; }
+  rosterLoading = false;
+}
+
+function rosterResultsHtml(query){
+  const q = (query||'').trim().toLowerCase();
+  const filtered = q
+    ? rosterList.filter(r => r.name.toLowerCase().includes(q) || String(r.roll_no).includes(q))
+    : rosterList;
+  if(rosterLoading) return `<div class="field-hint" style="padding:10px;">Loading roster…</div>`;
+  if(rosterList.length===0) return `<div class="field-hint" style="padding:10px;">No unclaimed names found. If you already have an account, use Log in instead.</div>`;
+  if(filtered.length===0) return `<div class="field-hint" style="padding:10px;">No match. Try a different spelling.</div>`;
+  return filtered.slice(0,40).map(r => `
+    <div class="list-row-tight" style="padding:8px 11px;cursor:pointer;display:flex;justify-content:space-between;" data-action="roster-pick" data-id="${r.roll_no}">
+      <span style="font-size:13.5px;">${esc(r.name)}</span>
+      <span class="field-hint">Roll ${r.roll_no}</span>
+    </div>`).join('');
+}
+
 function authGateHtml(mode){
   return `
   <div id="auth-gate" style="position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
@@ -2296,7 +2342,20 @@ function authGateHtml(mode){
         <div style="flex:1;height:1px;background:var(--border);"></div>
       </div>
       <form id="auth-form" class="stack" style="gap:14px;">
-        ${mode==='signup' ? fieldHtml('Name','name',{ required:true, placeholder:'Your name' }) : ''}
+        ${mode==='signup' ? `
+          <div class="field">
+            <label>That's you?</label>
+            ${selectedRoster ? `
+              <div id="roster-selected" class="row" style="justify-content:space-between;padding:9px 11px;background:var(--accent-subtle);border-radius:9px;">
+                <span style="font-weight:600;font-size:13.5px;">${esc(selectedRoster.name)} <span class="field-hint">· Roll ${selectedRoster.roll_no} · ${esc(selectedRoster.batch)}</span></span>
+                <button type="button" data-action="roster-change" style="background:none;border:none;color:var(--accent-text);font-size:12px;font-weight:700;cursor:pointer;">Change</button>
+              </div>
+            ` : `
+              <input type="text" id="roster-search" placeholder="Search your name or roll number" autocomplete="off">
+              <div id="roster-results" style="max-height:170px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;margin-top:2px;">${rosterResultsHtml('')}</div>
+            `}
+          </div>
+        ` : ''}
         ${fieldHtml('Email','email',{ type:'email', required:true, placeholder:'you@example.com' })}
         ${fieldHtml('Password','password',{ type:'password', required:true, placeholder:mode==='signup'?'At least 6 characters':'' })}
         <div id="auth-error" style="color:var(--danger);font-size:12.5px;display:none;"></div>
@@ -2305,9 +2364,17 @@ function authGateHtml(mode){
     </div>
   </div>`;
 }
-function showAuthGate(){
+async function showAuthGate(){
   const existing = document.getElementById('auth-gate');
   if(existing) existing.remove();
+  if(authMode==='signup' && rosterList.length===0 && !rosterLoading){
+    rosterLoading = true;
+    document.body.insertAdjacentHTML('beforeend', authGateHtml(authMode));
+    await loadRosterForSignup();
+    const resultsEl = document.getElementById('roster-results');
+    if(resultsEl) resultsEl.innerHTML = rosterResultsHtml(document.getElementById('roster-search')?.value||'');
+    return;
+  }
   document.body.insertAdjacentHTML('beforeend', authGateHtml(authMode));
 }
 function hideAuthGate(){
@@ -2319,9 +2386,61 @@ function authRequired(){
   showAuthGate();
 }
 
+
 /* ==================================================================================
    BOOTSTRAP
    ================================================================================== */
+async function ensureRosterClaimAndSeed(){
+  try{
+    const uidVal = await currentUserId();
+    const { data: already } = await sb.from('roster').select('roll_no,name,batch').eq('claimed_by', uidVal).maybeSingle();
+    if(already) return already;
+
+    const { data: sessionData } = await sb.auth.getSession();
+    const meta = (sessionData.session && sessionData.session.user.user_metadata) || {};
+    const rollNo = meta.roll_no;
+    if(!rollNo) return null; // no pending roster link (existing account from before this feature, or Google sign-in)
+
+    const { data: claimedRow, error: claimErr } = await sb.from('roster')
+      .update({ claimed_by: uidVal })
+      .eq('roll_no', rollNo)
+      .is('claimed_by', null)
+      .select().maybeSingle();
+    if(claimErr || !claimedRow) return null; // someone else already claimed this slot -- don't block the app
+
+    if(claimedRow.name) await updateProfile({ name: claimedRow.name });
+
+    if(state.subjects.length === 0){
+      const { data: masterSubjects } = await sb.from('master_subjects').select('*');
+      if(masterSubjects && masterSubjects.length){
+        const idMap = {};
+        for(const ms of masterSubjects){
+          const created = await createEntity('subjects', state.subjects, {
+            name: ms.name, code: ms.code, teacher: ms.teacher, room: ms.room,
+            type: ms.type, credits: ms.credits, target: ms.target, archived:false
+          });
+          idMap[ms.id] = created.id;
+        }
+        const { data: masterClasses } = await sb.from('master_classes').select('*')
+          .or(`batch.is.null,batch.eq.${claimedRow.batch}`);
+        if(masterClasses){
+          for(const mc of masterClasses){
+            if(!idMap[mc.subject_id]) continue;
+            await createEntity('classes', state.classes, {
+              subjectId: idMap[mc.subject_id], day: mc.day, start: mc.start_time, end: mc.end_time,
+              room: mc.room, teacher: mc.teacher, type: mc.type, notes: mc.notes
+            });
+          }
+        }
+      }
+    }
+    return claimedRow;
+  }catch(e){
+    console.error('roster claim/seed failed:', e);
+    return null; // non-fatal -- the app still works, just without auto-filled data
+  }
+}
+
 async function bootApp(){
   try{
     const profile = await loadProfile();
@@ -2334,6 +2453,8 @@ async function bootApp(){
     state.sessions=sessions; state.exams=exams; state.goals=goals; state.projects=projects;
     applyTheme();
     route();
+    await ensureRosterClaimAndSeed();
+    if(currentRoute==='today' || currentRoute==='timetable' || currentRoute==='subjects') route();
   }catch(e){
     if(e.message === 'auth'){ authRequired(); }
     else{
