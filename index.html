@@ -13,77 +13,73 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.0.3/index.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ============================================================
-   TOKENS — glass / Material You inspired
+   TOKENS — clean professional (white cards, orange accent)
    ============================================================ */
 :root{
-  --bg:#F8F9FC;
-  --bg-glow: radial-gradient(circle at 12% 8%, rgba(103,80,164,.10) 0%, transparent 42%),
-             radial-gradient(circle at 88% 92%, rgba(103,80,164,.06) 0%, transparent 40%);
-  --surface: rgba(255,255,255,.72);
+  --bg:#F6F7F9;
+  --surface:#FFFFFF;
   --surface-solid:#FFFFFF;
-  --surface-2: rgba(255,255,255,.5);
-  --text:#1A1C1E;
-  --text-2:#5B5766;
-  --text-muted:#8A8794;
-  --border: rgba(20,15,35,.09);
-  --border-soft: rgba(20,15,35,.055);
-  --accent:#6750A4;
-  --accent-2:#7F67BE;
-  --accent-subtle: rgba(103,80,164,.10);
-  --accent-text:#5B3FA0;
-  --success:#0F7A4A;
-  --success-bg: rgba(15,122,74,.10);
-  --warning:#9A6300;
-  --warning-bg: rgba(154,99,0,.10);
-  --danger:#B3261E;
-  --danger-bg: rgba(179,38,30,.09);
-  --info:#1D5FD3;
-  --info-bg: rgba(29,95,211,.09);
-  --glow-accent: 0 2px 18px rgba(103,80,164,.18);
-  --shadow-sm: 0 1px 2px rgba(30,20,50,.05);
-  --shadow-md: 0 8px 28px rgba(40,25,70,.09);
-  --blur: 18px;
+  --surface-2:#F3F4F6;
+  --text:#111827;
+  --text-2:#6B7280;
+  --text-muted:#9CA3AF;
+  --border:#E9EAED;
+  --border-soft:#F1F2F4;
+  --accent:#FB6D3A;
+  --accent-2:#FF8659;
+  --accent-subtle:#FFF0E8;
+  --accent-text:#E15A28;
+  --success:#16A34A;
+  --success-bg:#EAF8EF;
+  --warning:#D97706;
+  --warning-bg:#FEF3E2;
+  --danger:#DC2626;
+  --danger-bg:#FDECEC;
+  --info:#2563EB;
+  --info-bg:#EAF0FE;
+  --glow-accent: 0 2px 14px rgba(251,109,58,.22);
+  --shadow-sm: 0 1px 2px rgba(16,24,40,.04);
+  --shadow-md: 0 8px 24px rgba(16,24,40,.08);
+  --blur: 0px;
 
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px;
   --sp-6:24px; --sp-8:32px; --sp-10:40px; --sp-12:48px;
   --radius-card:16px; --radius-sm:10px; --radius-pill:999px;
-  --sidebar-w:256px;
-  --font-display:'Playfair Display', 'Geist', serif;
-  --font-mono:'JetBrains Mono', ui-monospace, monospace;
+  --sidebar-w:260px;
+  --font-display:'Geist','Inter',system-ui,sans-serif;
+  --font-mono:'Geist','Inter',system-ui,sans-serif;
   color-scheme: light;
 }
 [data-theme="dark"]{
-  --bg:#0E0D13;
-  --bg-glow: radial-gradient(circle at 12% 8%, rgba(208,188,255,.10) 0%, transparent 42%),
-             radial-gradient(circle at 88% 92%, rgba(208,188,255,.06) 0%, transparent 40%);
-  --surface: rgba(28,25,38,.62);
-  --surface-solid:#17151F;
-  --surface-2: rgba(38,34,50,.55);
-  --text:#EDE9F5;
-  --text-2:#B2ACC2;
-  --text-muted:#736D85;
-  --border: rgba(220,210,255,.10);
-  --border-soft: rgba(220,210,255,.06);
-  --accent:#D0BCFF;
-  --accent-2:#B69DF8;
-  --accent-subtle: rgba(208,188,255,.14);
-  --accent-text:#D0BCFF;
-  --success:#4ADE9A;
-  --success-bg: rgba(74,222,154,.12);
-  --warning:#F2C14E;
-  --warning-bg: rgba(242,193,78,.12);
-  --danger:#F1897E;
-  --danger-bg: rgba(241,137,126,.12);
-  --info:#8AB4F8;
-  --info-bg: rgba(138,180,248,.12);
-  --glow-accent: 0 2px 22px rgba(208,188,255,.22);
+  --bg:#0B0D11;
+  --surface:#14171C;
+  --surface-solid:#14171C;
+  --surface-2:#1B1F26;
+  --text:#F3F4F6;
+  --text-2:#9CA3AF;
+  --text-muted:#6B7280;
+  --border:#242830;
+  --border-soft:#1C2027;
+  --accent:#FB6D3A;
+  --accent-2:#FF8659;
+  --accent-subtle:#2B1A11;
+  --accent-text:#FF8659;
+  --success:#34D399;
+  --success-bg:#0F2A20;
+  --warning:#FBBF24;
+  --warning-bg:#2B2211;
+  --danger:#F87171;
+  --danger-bg:#2C1616;
+  --info:#60A5FA;
+  --info-bg:#131E2E;
+  --glow-accent: 0 2px 16px rgba(251,109,58,.28);
   --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
-  --shadow-md: 0 10px 32px rgba(0,0,0,.42);
+  --shadow-md: 0 10px 28px rgba(0,0,0,.4);
   color-scheme: dark;
 }
 
@@ -92,8 +88,6 @@ html{ -webkit-text-size-adjust:100%; }
 body{
   margin:0;
   background:var(--bg);
-  background-image:var(--bg-glow);
-  background-attachment:fixed;
   color:var(--text);
   font-family:'Geist','Geist Sans','Inter',system-ui,-apple-system,sans-serif;
   font-size:14px;
@@ -152,22 +146,23 @@ button, input, select, textarea{ font-size:14px; color:inherit; }
   z-index:40;
 }
 .brand{
-  display:flex; align-items:center; gap:var(--sp-2);
+  display:flex; align-items:center; gap:var(--sp-3);
   padding:0 var(--sp-2);
   margin-bottom:var(--sp-8);
 }
 .brand-mark{
-  width:34px; height:34px; border-radius:12px;
-  background:var(--accent-subtle); color:var(--accent-text);
-  border:1px solid var(--border);
+  width:38px; height:38px; border-radius:11px;
+  background:var(--accent); color:#fff;
   display:flex; align-items:center; justify-content:center;
-  font-weight:700; font-size:13px; flex-shrink:0;
+  font-weight:800; font-size:12px; flex-shrink:0; letter-spacing:.02em;
   box-shadow:var(--glow-accent);
 }
-.brand-name{ font-family:var(--font-display); font-weight:600; font-size:15.5px; letter-spacing:-.005em; }
+.brand-name{ font-weight:800; font-size:12.5px; letter-spacing:.02em; line-height:1.35; color:var(--text); }
 .brand-sub{ font-size:11px; color:var(--text-muted); margin-top:-1px; }
 
-.nav-list{ display:flex; flex-direction:column; gap:2px; flex:1; }
+.nav-list{ display:flex; flex-direction:column; gap:0; flex:1; overflow-y:auto; }
+.nav-group{ margin-bottom:var(--sp-4); }
+.nav-group-label{ font-size:10.5px; font-weight:700; letter-spacing:.07em; color:var(--text-muted); padding:0 var(--sp-3) 6px; }
 .nav-item{
   display:flex; align-items:center; gap:var(--sp-3);
   padding:9px var(--sp-3);
@@ -176,11 +171,42 @@ button, input, select, textarea{ font-size:14px; color:inherit; }
   font-size:13.5px; font-weight:500;
   cursor:pointer;
   border:1px solid transparent;
+  position:relative;
   transition:background .16s ease, color .16s ease, border-color .16s ease;
 }
 .nav-item:hover{ background:var(--surface-2); color:var(--text); }
-.nav-item.active{ background:var(--accent-subtle); color:var(--accent-text); font-weight:650; border-color:var(--border); box-shadow:var(--shadow-sm); }
-.nav-foot{ padding-top:var(--sp-4); border-top:1px solid var(--border); margin-top:var(--sp-4); }
+.nav-item.active{ background:var(--accent-subtle); color:var(--accent-text); font-weight:650; }
+.nav-item.active::before{ content:''; position:absolute; left:-12px; top:8px; bottom:8px; width:3px; border-radius:0 3px 3px 0; background:var(--accent); }
+.nav-badge{ margin-left:auto; background:var(--accent); color:#fff; font-size:10.5px; font-weight:700; padding:1px 7px; border-radius:99px; }
+.nav-foot{ padding-top:var(--sp-4); }
+
+.streak-card{
+  background:linear-gradient(135deg, var(--accent), #FF9563);
+  color:#fff; border-radius:14px; padding:14px 16px;
+  box-shadow:var(--glow-accent);
+}
+.streak-card .icon{ color:#fff; }
+
+.topbar-desktop{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:var(--sp-5) var(--sp-10) 0;
+}
+.avatar-circle{
+  width:36px; height:36px; border-radius:50%;
+  background:var(--accent-subtle); color:var(--accent-text);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:13px; flex-shrink:0; cursor:pointer;
+}
+.avatar-circle-sm{ width:30px; height:30px; font-size:11.5px; }
+.topbar-bell{
+  position:relative; width:36px; height:36px; border-radius:50%;
+  background:var(--surface-2); display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.topbar-bell-dot{
+  position:absolute; top:-2px; right:-2px; background:var(--danger); color:#fff;
+  font-size:9.5px; font-weight:700; min-width:16px; height:16px; border-radius:99px;
+  display:flex; align-items:center; justify-content:center; padding:0 3px; border:2px solid var(--bg);
+}
 
 .main{
   flex:1;
@@ -358,48 +384,52 @@ button, input, select, textarea{ font-size:14px; color:inherit; }
 /* ============================================================
    TODAY VIEW SPECIFICS
    ============================================================ */
-.glance-grid{ display:grid; grid-template-columns: 1.6fr 1fr 1fr; gap:var(--sp-4); margin-bottom:var(--sp-6); }
-.glance-hero{
-  background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
-  border:1px solid var(--border); border-radius:var(--radius-card); padding:var(--sp-6);
-  grid-row:span 2; display:flex; flex-direction:column; justify-content:space-between;
-  box-shadow:var(--shadow-sm);
+.stat-row{ display:grid; grid-template-columns: repeat(6, 1fr); gap:var(--sp-4); margin-bottom:var(--sp-6); }
+.stat-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-card);
+  padding:var(--sp-5); box-shadow:var(--shadow-sm); transition:box-shadow .2s ease;
+  grid-column:span 1;
 }
-.glance-mini{
-  background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
-  border:1px solid var(--border); border-radius:var(--radius-card); padding:var(--sp-4);
-  box-shadow:var(--shadow-sm); transition:box-shadow .2s ease, transform .2s ease;
-}
-.glance-mini:hover{ box-shadow:var(--shadow-md); }
+.stat-card:hover{ box-shadow:var(--shadow-md); }
+.stat-card-label{ font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--text-muted); }
+.stat-icon-badge{ width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 
 .next-class-card{
   border-radius:var(--radius-card); padding:var(--sp-6);
-  background:var(--surface); backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
-  border:1px solid var(--border);
+  background:var(--accent-subtle); border:1px solid var(--border);
   position:relative; overflow:hidden;
 }
-.next-class-card::before{
-  content:''; position:absolute; top:-60%; right:-15%; width:280px; height:280px;
-  background:radial-gradient(circle, rgba(103,80,164,.14) 0%, transparent 70%);
-  border-radius:50%; pointer-events:none;
-}
-[data-theme="dark"] .next-class-card::before{ background:radial-gradient(circle, rgba(208,188,255,.12) 0%, transparent 70%); }
-.next-class-card.live{ border-color:var(--accent); box-shadow:var(--glow-accent); }
+.next-class-card.live{ background:var(--surface); border-color:var(--accent); box-shadow:var(--glow-accent); }
 .live-pulse{ width:8px; height:8px; border-radius:50%; background:var(--accent); position:relative; box-shadow:0 0 10px var(--accent); }
 .live-pulse::after{ content:''; position:absolute; inset:-5px; border-radius:50%; background:var(--accent); opacity:.4; animation:pulse 1.7s ease-in-out infinite; }
 @keyframes pulse{ 0%{ transform:scale(.6); opacity:.5;} 70%{ transform:scale(2.1); opacity:0;} 100%{ opacity:0;} }
 
+.link-accent{ font-size:12.5px; font-weight:650; color:var(--accent-text); }
+
 .timeline{ position:relative; }
-.timeline-row{ display:flex; gap:var(--sp-4); padding:var(--sp-3) 0; border-bottom:1px solid var(--border-soft); }
-.timeline-row:last-child{ border-bottom:none; }
-.timeline-time{ width:60px; flex-shrink:0; font-family:var(--font-mono); font-size:12px; font-weight:500; color:var(--text-2); padding-top:2px; }
-.timeline-marker{ width:2px; background:var(--border); position:relative; flex-shrink:0; margin-top:4px; border-radius:2px; }
-.timeline-marker.current{ background:var(--accent); box-shadow:0 0 8px var(--accent); }
-.timeline-body{ flex:1; padding-bottom:2px; }
-.timeline-row.completed .timeline-body{ opacity:.5; }
+.timeline-row{ display:flex; gap:var(--sp-3); padding:var(--sp-3) 0; }
+.timeline-row:not(:last-child){ padding-bottom:var(--sp-4); position:relative; }
+.timeline-row:not(:last-child)::after{ content:''; position:absolute; left:79px; top:32px; bottom:-14px; width:2px; background:var(--border); }
+.timeline-time{ width:64px; flex-shrink:0; font-size:11.5px; font-weight:600; color:var(--text-2); padding-top:6px; }
+.timeline-dot{
+  width:26px; height:26px; border-radius:50%; flex-shrink:0; margin-top:2px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--surface-2); border:2px solid var(--border); color:var(--text-muted);
+  position:relative; z-index:1;
+}
+.timeline-dot.completed{ background:var(--success); border-color:var(--success); color:#fff; }
+.timeline-dot.live{ background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-subtle); }
+.timeline-dot.upcoming{ background:var(--surface); }
+.timeline-body{ flex:1; padding-top:1px; }
+.timeline-row.completed .timeline-body{ opacity:.55; }
 .timeline-row.completed .timeline-time{ color:var(--text-muted); }
+.timeline-row.live .timeline-body{ background:var(--accent-subtle); margin:-8px -10px; padding:8px 10px; border-radius:10px; }
 
 .two-col{ display:grid; grid-template-columns:1.4fr 1fr; gap:var(--sp-6); align-items:start; }
+.row-3col{ display:grid; grid-template-columns: 1.3fr 1fr 1fr; gap:var(--sp-5); margin-bottom:var(--sp-6); align-items:start; }
+.row-2col{ display:grid; grid-template-columns: 1.2fr 1fr; gap:var(--sp-5); align-items:start; }
+.mini-stat-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--sp-4); }
+.mini-stat-cell{ background:var(--surface-2); border-radius:12px; padding:var(--sp-4); }
 
 /* ============================================================
    TIMETABLE
@@ -452,14 +482,21 @@ button, input, select, textarea{ font-size:14px; color:inherit; }
   }
   .bn-item{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 8px; color:var(--text-muted); font-size:10.5px; font-weight:600; border-radius:12px; flex:1; }
   .bn-item.active{ color:var(--accent-text); }
-  .glance-grid{ grid-template-columns:1fr 1fr; }
-  .glance-hero{ grid-column:span 2; grid-row:auto; }
+  .stat-row{ grid-template-columns:1fr 1fr; }
+  .next-class-card{ grid-column:span 2 !important; }
+  .row-3col{ grid-template-columns:1fr; }
+  .row-2col{ grid-template-columns:1fr; }
   .two-col{ grid-template-columns:1fr; }
   .field-row{ grid-template-columns:1fr; }
   .week-grid{ display:none; }
+  .topbar-desktop{ display:none; }
 }
 @media (min-width:1024px){
   .day-picker{ display:none; }
+}
+@media (max-width:640px){
+  .stat-row{ grid-template-columns:1fr; }
+  .mini-stat-grid{ grid-template-columns:1fr; }
 }
 @media (max-width:480px){
   .page-title{ font-size:23px; }
@@ -476,25 +513,34 @@ button, input, select, textarea{ font-size:14px; color:inherit; }
   <!-- DESKTOP SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-mark">SC</div>
+      <div class="brand-mark">SCC</div>
       <div>
-        <div class="brand-name">Command Center</div>
-        <div class="brand-sub" id="sidebar-college">Academic OS</div>
+        <div class="brand-name">STUDENT<br>COMMAND CENTER</div>
       </div>
     </div>
     <nav class="nav-list" id="nav-list"></nav>
     <div class="nav-foot">
-      <div class="nav-item" data-action="theme-toggle" id="theme-toggle-desktop"></div>
+      <div class="streak-card" id="streak-card"></div>
+      <div class="nav-item" data-action="theme-toggle" id="theme-toggle-desktop-wrap" style="margin-top:10px;">
+        <span id="theme-toggle-desktop"></span><span>Toggle theme</span>
+      </div>
     </div>
   </aside>
 
   <main class="main">
+    <div class="topbar-desktop hide-mobile">
+      <div></div>
+      <div id="topbar-avatar-desktop"></div>
+    </div>
     <div class="topbar-mobile">
       <div class="row">
-        <div class="brand-mark" style="width:26px;height:26px;font-size:11px;">SC</div>
-        <span style="font-weight:650;font-size:14.5px;">Command Center</span>
+        <div class="brand-mark" style="width:30px;height:30px;font-size:11px;border-radius:9px;">SCC</div>
+        <span style="font-weight:700;font-size:14.5px;">Command Center</span>
       </div>
-      <button class="btn btn-ghost btn-icon" data-action="theme-toggle" aria-label="Toggle theme" id="theme-toggle-mobile"></button>
+      <div class="row" style="gap:10px;">
+        <button class="btn btn-ghost btn-icon" data-action="theme-toggle" aria-label="Toggle theme" id="theme-toggle-mobile"></button>
+        <div id="topbar-avatar-mobile"></div>
+      </div>
     </div>
 
     <div id="main-content"></div>
@@ -523,6 +569,8 @@ button, input, select, textarea{ font-size:14px; color:inherit; }
    ICONS
    ================================================================================== */
 const ICONS = {
+bell:'notifications',
+streak:'local_fire_department',
 today:'today',
 timetable:'calendar_view_week',
 subjects:'menu_book',
@@ -829,20 +877,21 @@ function studyMinutes(list){ return list.reduce((sum,s)=>sum+(Number(s.durationM
    NAVIGATION CONFIG
    ================================================================================== */
 const NAV = [
-  { id:'today', label:'Today', icon:'today' },
-  { id:'timetable', label:'Timetable', icon:'timetable' },
-  { id:'subjects', label:'Subjects', icon:'subjects' },
-  { id:'attendance', label:'Attendance', icon:'attendance' },
-  { id:'tasks', label:'Tasks', icon:'tasks' },
-  { id:'study', label:'Study', icon:'study' },
-  { id:'performance', label:'Performance', icon:'performance' },
-  { id:'review', label:'Weekly Review', icon:'review' },
-  { id:'exams', label:'Exams', icon:'exams' },
-  { id:'calendar', label:'Calendar', icon:'calendar' },
-  { id:'goals', label:'Goals', icon:'goals' },
-  { id:'projects', label:'Projects', icon:'projects' },
-  { id:'settings', label:'Settings', icon:'settings' },
+  { id:'today', label:'Today', icon:'today', group:'ACADEMICS' },
+  { id:'timetable', label:'Timetable', icon:'timetable', group:'ACADEMICS' },
+  { id:'attendance', label:'Attendance', icon:'attendance', group:'ACADEMICS' },
+  { id:'subjects', label:'Subjects', icon:'subjects', group:'ACADEMICS' },
+  { id:'tasks', label:'Tasks', icon:'tasks', group:'ACADEMICS' },
+  { id:'study', label:'Study & Focus', icon:'study', group:'ACADEMICS' },
+  { id:'performance', label:'Performance', icon:'performance', group:'TRACKING & TOOLS' },
+  { id:'review', label:'Weekly Review', icon:'review', group:'TRACKING & TOOLS' },
+  { id:'exams', label:'Exams', icon:'exams', group:'TRACKING & TOOLS' },
+  { id:'calendar', label:'Calendar', icon:'calendar', group:'TRACKING & TOOLS' },
+  { id:'goals', label:'Goals', icon:'goals', group:'TRACKING & TOOLS' },
+  { id:'projects', label:'Projects', icon:'projects', group:'TRACKING & TOOLS' },
+  { id:'settings', label:'Settings', icon:'settings', group:'SYSTEM' },
 ];
+const NAV_GROUPS = ['ACADEMICS','TRACKING & TOOLS','SYSTEM'];
 const MOBILE_PRIMARY = ['today','timetable','attendance','tasks'];
 const MOBILE_MORE = ['subjects','study','performance','review','exams','calendar','goals','projects','settings'];
 
@@ -852,11 +901,46 @@ let uiState = { timetableDay: todayDayCode() || 'Mon', calendarCursor: new Date(
 /* ==================================================================================
    RENDER: SHELL (sidebar / bottom nav / topbar)
    ================================================================================== */
+function studyStreakDays(){
+  // consecutive days up to today with at least one attendance record or study session
+  const activeDates = new Set();
+  state.attendance.forEach(a=>activeDates.add(a.date));
+  state.sessions.forEach(s=>activeDates.add(s.date));
+  let streak = 0;
+  let d = new Date();
+  // if nothing logged today yet, streak still counts from yesterday backward
+  if(!activeDates.has(todayISO())) d.setDate(d.getDate()-1);
+  while(activeDates.has(isoFromDate(d))){
+    streak++;
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
 function renderShell(){
-  document.getElementById('nav-list').innerHTML = NAV.map(n=>`
-    <a href="#${n.id}" class="nav-item ${currentRoute===n.id?'active':''}">
-      ${icon(n.icon)}<span>${n.label}</span>
-    </a>`).join('');
+  document.getElementById('nav-list').innerHTML = NAV_GROUPS.map(group=>{
+    const items = NAV.filter(n=>n.group===group);
+    return `<div class="nav-group">
+      <div class="nav-group-label">${group}</div>
+      ${items.map(n=>`
+        <a href="#${n.id}" class="nav-item ${currentRoute===n.id?'active':''}">
+          ${icon(n.icon)}<span>${n.label}</span>
+          ${n.id==='tasks' && pendingTaskCount()>0 ? `<span class="nav-badge">${pendingTaskCount()}</span>` : ''}
+        </a>`).join('')}
+    </div>`;
+  }).join('');
+
+  const streak = studyStreakDays();
+  const streakEl = document.getElementById('streak-card');
+  if(streakEl){
+    streakEl.innerHTML = streak>0 ? `
+      <div class="row" style="gap:8px;margin-bottom:6px;">${icon('streak','icon-lg')}<span style="font-weight:700;font-size:15px;">${streak} day${streak===1?'':'s'}</span></div>
+      <div class="field-hint" style="color:rgba(255,255,255,.85);margin-bottom:10px;">Keep it up!</div>
+      <div class="progress-track" style="background:rgba(255,255,255,.25);"><div class="progress-fill" style="width:${clamp(streak/30*100,4,100)}%;background:#fff;box-shadow:none;"></div></div>
+    ` : `
+      <div class="row" style="gap:8px;margin-bottom:6px;">${icon('streak','icon-lg')}<span style="font-weight:700;font-size:15px;">Start a streak</span></div>
+      <div class="field-hint" style="color:rgba(255,255,255,.85);">Log attendance or a study session today.</div>
+    `;
+  }
 
   document.getElementById('bottom-nav').innerHTML =
     MOBILE_PRIMARY.map(id=>{
@@ -872,11 +956,43 @@ function renderShell(){
   }).join('');
 
   const themeBtn = themeIconHtml();
-  document.getElementById('theme-toggle-desktop').innerHTML = `${themeBtn.icon}<span>${themeBtn.label}</span>`;
-  document.getElementById('theme-toggle-mobile').innerHTML = themeBtn.icon;
+  const themeDesktop = document.getElementById('theme-toggle-desktop');
+  if(themeDesktop) themeDesktop.innerHTML = themeBtn.icon;
+  const themeMobile = document.getElementById('theme-toggle-mobile');
+  if(themeMobile) themeMobile.innerHTML = themeBtn.icon;
 
-  const college = state.profile.college || 'Academic OS';
-  document.getElementById('sidebar-college').textContent = college;
+  renderTopbarAvatar();
+}
+function pendingTaskCount(){ return state.tasks.filter(t=>t.status!=='Completed').length; }
+function initialsFromName(name){
+  const parts = (name||'').trim().split(/\s+/).filter(Boolean);
+  if(parts.length===0) return 'U';
+  if(parts.length===1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+}
+function renderTopbarAvatar(){
+  const p = state.profile;
+  const initials = initialsFromName(p.name);
+  const meta = [p.course, p.year ? p.year+' Year' : ''].filter(Boolean).join(' · ');
+  for(const id of ['topbar-avatar-desktop','topbar-avatar-mobile']){
+    const el = document.getElementById(id);
+    if(!el) continue;
+    if(id==='topbar-avatar-desktop'){
+      el.innerHTML = `
+        <div class="row" style="gap:10px;">
+          <div class="topbar-bell" data-action="nav-tasks">${icon('bell')}${pendingTaskCount()>0 ? `<span class="topbar-bell-dot">${pendingTaskCount()>9?'9+':pendingTaskCount()}</span>` : ''}</div>
+          <div class="row" style="gap:9px;cursor:pointer;" data-action="nav-settings">
+            <div class="avatar-circle">${esc(initials)}</div>
+            <div style="line-height:1.3;">
+              <div style="font-weight:650;font-size:13.5px;">${esc(p.name||'Student')}</div>
+              <div class="field-hint">${esc(meta||'Set up profile')}</div>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      el.innerHTML = `<div class="avatar-circle avatar-circle-sm" data-action="nav-settings">${esc(initials)}</div>`;
+    }
+  }
 }
 function themeIconHtml(){
   const t = state.profile.theme || 'system';
@@ -982,141 +1098,159 @@ function subjectOptions(){ return activeSubjects().map(s=>({value:s.id, label:`$
 /* ==================================================================================
    VIEW: TODAY
    ================================================================================== */
+function sparkline(values, color, width=72, height=26){
+  if(!values || values.length<2 || values.every(v=>v===values[0])){
+    return `<svg width="${width}" height="${height}"></svg>`;
+  }
+  const max = Math.max(...values), min = Math.min(...values, 0);
+  const range = (max-min)||1;
+  const step = width/(values.length-1);
+  const pts = values.map((v,i)=>`${(i*step).toFixed(1)},${(height-2-((v-min)/range)*(height-4)).toFixed(1)}`).join(' ');
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="overflow:visible;flex-shrink:0;">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+function formatHoursMins(mins){
+  mins = Math.round(mins||0);
+  const h = Math.floor(mins/60), m = mins%60;
+  if(h<=0) return `${m}m`;
+  return `${h}h ${m}m`;
+}
+function last7Days(){ return [...Array(7)].map((_,i)=>{ const d=new Date(); d.setDate(d.getDate()-(6-i)); return isoFromDate(d); }); }
+
 function renderToday(){
   const name = state.profile.name || 'there';
   const dayCode = todayDayCode();
   const todaysClasses = dayCode ? classesForDay(dayCode) : [];
   const overall = overallAttendance();
   const pendingTasks = state.tasks.filter(t=>t.status!=='Completed');
-  const weekS = sessionsInRange(weekRange().start, todayISO());
-  const studyHrsWeek = (studyMinutes(weekS)/60);
-
+  const completedToday = todaysClasses.filter(c=>classStatus(c)==='completed').length;
+  const upcomingToday = todaysClasses.filter(c=>classStatus(c)==='upcoming').length;
   const next = todaysClasses.map(c=>({c, st:classStatus(c)})).find(x=>x.st==='live' || x.st==='upcoming');
+
+  const days7 = last7Days();
+  const studyByDay = days7.map(d => studyMinutes(state.sessions.filter(s=>s.date===d))/60);
+  const attByDay = days7.map(d => {
+    const recs = state.attendance.filter(a=>a.date<=d);
+    return recs.length ? recs.filter(r=>r.status==='present').length/recs.length*100 : 0;
+  });
 
   return `
   <div class="page-head">
     <div>
-      <h1 class="page-title">Good ${dayPart()}, ${esc(name.split(' ')[0]||name)}</h1>
+      <h1 class="page-title">Good ${dayPart()}, ${esc(name.split(' ')[0]||name)} 👋</h1>
       <p class="page-sub">${fmtDateLong(todayISO())}</p>
     </div>
+    <div class="row" style="gap:10px;">
+      <a href="#study" class="btn btn-secondary">${icon('study','icon-sm')} Focus Timer</a>
+      <a href="#tasks" class="btn btn-primary">${icon('plus','icon-sm')} New Task</a>
+    </div>
   </div>
 
-  <div class="eyebrow" style="margin-bottom:10px;">Today at a glance</div>
-  <div class="glance-grid">
+  <div class="stat-row">
     ${renderNextClassHero(next, todaysClasses, dayCode)}
-    <div class="glance-mini">
-      <div class="stat-num">${overall.pct===null ? '—' : overall.pct.toFixed(1)+'%'}</div>
-      <div class="stat-label">Overall attendance</div>
+    <div class="stat-card">
+      <div class="spread" style="margin-bottom:10px;"><span class="stat-card-label">Classes Today</span><div class="stat-icon-badge" style="background:var(--info-bg);color:var(--info);">${icon('timetable','icon-sm')}</div></div>
+      <div class="stat-num">${todaysClasses.length}</div>
+      <div class="field-hint" style="margin-top:4px;">${completedToday} completed · ${upcomingToday} upcoming</div>
     </div>
-    <div class="glance-mini">
+    <div class="stat-card">
+      <div class="spread" style="margin-bottom:10px;"><span class="stat-card-label">Attendance</span>${overall.total>0 ? (()=>{const st=attendanceStatusLabel(overall.pct,state.profile.target); return `<span class="badge badge-${st.tone}">${st.label}</span>`;})() : `<div class="stat-icon-badge" style="background:var(--success-bg);color:var(--success);">${icon('attendance','icon-sm')}</div>`}</div>
+      <div class="stat-num">${overall.pct===null?'—':overall.pct.toFixed(1)+'%'}</div>
+      <div class="spread" style="margin-top:4px;align-items:flex-end;"><span class="field-hint">${overall.total===0?'Not recorded':overall.present+' / '+overall.total}</span>${sparkline(attByDay, 'var(--success)')}</div>
+    </div>
+    <div class="stat-card">
+      <div class="spread" style="margin-bottom:10px;"><span class="stat-card-label">Pending Tasks</span><div class="stat-icon-badge" style="background:var(--danger-bg);color:var(--danger);">${icon('tasks','icon-sm')}</div></div>
       <div class="stat-num">${pendingTasks.length}</div>
-      <div class="stat-label">Pending tasks</div>
+      <div class="field-hint" style="margin-top:4px;">${state.tasks.filter(taskIsToday).length} due today · ${state.tasks.filter(taskIsOverdue).length} overdue</div>
     </div>
-    <div class="glance-mini" style="grid-column:span 2;">
-      <div class="spread">
-        <div>
-          <div class="stat-num" style="font-size:22px;">${studyHrsWeek.toFixed(1)}h</div>
-          <div class="stat-label">Study time this week</div>
-        </div>
-        <div class="row">${icon('study','icon-lg')}</div>
-      </div>
+    <div class="stat-card">
+      <div class="spread" style="margin-bottom:10px;"><span class="stat-card-label">Study Time</span><div class="stat-icon-badge" style="background:var(--accent-subtle);color:var(--accent-text);">${icon('study','icon-sm')}</div></div>
+      <div class="stat-num">${formatHoursMins(studyMinutes(state.sessions.filter(s=>s.date===todayISO())))}</div>
+      <div class="spread" style="margin-top:4px;align-items:flex-end;"><span class="field-hint">Today</span>${sparkline(studyByDay, 'var(--accent)')}</div>
     </div>
   </div>
 
-  <div class="two-col">
-    <div class="stack" style="gap:28px;">
-      <section>
-        <div class="section-title" style="margin-bottom:12px;">Today's timeline</div>
-        ${renderTodayTimeline(todaysClasses, dayCode)}
-      </section>
+  <div class="row-3col">
+    <section class="card">
+      <div class="spread" style="margin-bottom:14px;"><span class="section-title">Today's Schedule</span><a href="#timetable" class="link-accent">View Timetable</a></div>
+      ${renderTodayTimeline(todaysClasses, dayCode)}
+    </section>
+    <section class="card">
+      <div class="spread" style="margin-bottom:14px;"><span class="section-title">Due Today</span><a href="#tasks" class="link-accent">View all${pendingTasks.length?' ('+pendingTasks.length+')':''}</a></div>
+      ${renderPriorities()}
+    </section>
+    <section class="card">
+      <div class="section-title" style="margin-bottom:14px;">Upcoming Exam</div>
+      ${renderUpcomingExamMini()}
+    </section>
+  </div>
 
-      <section>
-        <div class="spread" style="margin-bottom:12px;">
-          <div class="section-title">Priorities</div>
-          <a href="#tasks" class="badge badge-neutral">View all</a>
-        </div>
-        ${renderPriorities()}
-      </section>
-    </div>
-
-    <div class="stack" style="gap:24px;">
-      <section class="card">
-        <div class="section-title" style="margin-bottom:12px;">Attendance health</div>
-        ${renderAttendanceHealthMini(overall)}
-      </section>
-
-      <section class="card">
-        <div class="section-title" style="margin-bottom:12px;">Upcoming exam</div>
-        ${renderUpcomingExamMini()}
-      </section>
-
-      <section class="card">
-        <div class="section-title" style="margin-bottom:14px;">Weekly progress</div>
-        ${renderWeeklyProgressMini()}
-      </section>
-    </div>
+  <div class="row-2col">
+    <section class="card">
+      <div class="spread" style="margin-bottom:14px;"><span class="section-title">Attendance Breakdown</span><a href="#attendance" class="link-accent">View Simulator</a></div>
+      ${renderAttendanceBreakdownMini()}
+    </section>
+    <section class="card">
+      <div class="spread" style="margin-bottom:14px;"><span class="section-title">This Week's Progress</span><a href="#performance" class="link-accent">View Performance</a></div>
+      ${renderWeeklyProgressMini(days7, studyByDay)}
+    </section>
   </div>`;
 }
 function dayPart(){ const h=new Date().getHours(); if(h<12) return 'morning'; if(h<17) return 'afternoon'; return 'evening'; }
 
 function renderNextClassHero(next, todaysClasses, dayCode){
   if(!dayCode){
-    return `<div class="glance-hero"><div>
-      <div class="eyebrow" style="margin-bottom:10px;">Next class</div>
-      <div class="empty" style="padding:20px 0;">${icon('today','icon-lg')}<div class="empty-title">No classes today</div><div class="empty-sub">It's the weekend. Enjoy the break.</div></div>
-    </div></div>`;
+    return `<div class="stat-card next-class-card" style="grid-column:span 2;">
+      <div class="eyebrow" style="margin-bottom:10px;">Next Class</div>
+      <div class="empty" style="padding:14px 0;">${icon('today','icon-lg')}<div class="empty-title">No classes today</div><div class="empty-sub">It's the weekend. Enjoy the break.</div></div>
+    </div>`;
   }
   if(!next){
     const done = todaysClasses.length>0;
-    return `<div class="glance-hero"><div>
-      <div class="eyebrow" style="margin-bottom:10px;">Next class</div>
-      <div class="empty" style="padding:20px 0;">${icon('today','icon-lg')}<div class="empty-title">${done?'All classes done for today':'No classes scheduled today'}</div>${done?'':`<div class="empty-sub">Build your weekly timetable to see it here.</div>`}</div>
-    </div></div>`;
+    return `<div class="stat-card next-class-card" style="grid-column:span 2;">
+      <div class="eyebrow" style="margin-bottom:10px;">Next Class</div>
+      <div class="empty" style="padding:14px 0;">${icon('today','icon-lg')}<div class="empty-title">${done?'All classes done for today':'No classes scheduled today'}</div>${done?'':`<div class="empty-sub">Build your weekly timetable to see it here.</div>`}</div>
+    </div>`;
   }
   const c = next.c, sub = getSubject(c.subjectId);
   const isLive = next.st==='live';
   const s = toMin(c.start);
-  return `<div class="glance-hero next-class-card ${isLive?'live':''}">
-    <div>
-      <div class="spread" style="margin-bottom:16px;">
-        <div class="eyebrow">Next class</div>
-        ${isLive ? `<div class="row" style="gap:6px;"><span class="live-pulse"></span><span class="badge badge-accent">LIVE</span></div>` : `<span class="badge badge-neutral">${countdownLabel(s-nowMinutes())} away</span>`}
-      </div>
-      <div style="font-size:22px;font-weight:700;letter-spacing:-.01em;">${esc(sub? sub.name : 'Unknown subject')}</div>
-      <div class="page-sub" style="margin-top:2px;">${esc(sub? sub.code : '')}</div>
+  return `<div class="stat-card next-class-card ${isLive?'live':''}" style="grid-column:span 2;">
+    <div class="spread" style="margin-bottom:14px;">
+      <span class="stat-card-label">${isLive?'':'NEXT CLASS'}</span>
+      ${isLive ? `<div class="row" style="gap:6px;"><span class="live-pulse"></span><span class="badge badge-accent">LIVE</span></div>` : `<div class="stat-icon-badge" style="background:var(--accent-subtle);color:var(--accent-text);">${icon('subjects','icon-sm')}</div>`}
     </div>
-    <div>
-      ${isLive ? `<div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:${clamp((nowMinutes()-s)/(toMin(c.end)-s)*100,0,100)}%;"></div></div>` : ''}
-      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
-        <div class="row" style="gap:16px;flex-wrap:wrap;">
-          <span class="page-sub">${fmtTime(c.start)} – ${fmtTime(c.end)}</span>
-          <span class="page-sub">${esc(c.room||'—')}</span>
-        </div>
-        <span class="page-sub">${esc(c.teacher||'')}</span>
-      </div>
+    <div style="font-size:19px;font-weight:700;letter-spacing:-.01em;">${esc(sub? sub.name : 'Unknown subject')}</div>
+    <div class="page-sub" style="margin-top:2px;margin-bottom:12px;">${esc(sub? sub.code : '')} · ${esc(c.room||'—')} · ${esc(c.teacher||'')}</div>
+    ${isLive ? `<div class="progress-track" style="margin-bottom:10px;"><div class="progress-fill" style="width:${clamp((nowMinutes()-s)/(toMin(c.end)-s)*100,0,100)}%;"></div></div>` : ''}
+    <div class="spread">
+      <span class="page-sub">${fmtTime(c.start)} – ${fmtTime(c.end)}</span>
+      ${!isLive ? `<span class="badge badge-accent">Starts in ${countdownLabel(s-nowMinutes())}</span>` : ''}
     </div>
   </div>`;
 }
 
 function renderTodayTimeline(list, dayCode){
-  if(!dayCode) return `<div class="card empty">${icon('timetable','icon-lg')}<div class="empty-title">No classes scheduled today</div></div>`;
-  if(list.length===0) return `<div class="card empty">${icon('timetable','icon-lg')}<div class="empty-title">No classes scheduled today</div><div class="empty-sub">Build your weekly timetable.</div></div>`;
-  return `<div class="card"><div class="timeline">${list.map(c=>{
+  if(!dayCode) return `<div class="empty" style="padding:24px 0;">${icon('timetable','icon-lg')}<div class="empty-title">No classes scheduled today</div></div>`;
+  if(list.length===0) return `<div class="empty" style="padding:24px 0;">${icon('timetable','icon-lg')}<div class="empty-title">No classes scheduled today</div><div class="empty-sub">Build your weekly timetable.</div></div>`;
+  return `<div class="timeline">${list.map(c=>{
     const st = classStatus(c); const sub = getSubject(c.subjectId);
     return `<div class="timeline-row ${st}">
       <div class="timeline-time">${fmtTime(c.start)}</div>
-      <div class="timeline-marker ${st==='live'?'current':''}"></div>
+      <div class="timeline-dot ${st}">${st==='completed'?icon('check','icon-sm'):''}</div>
       <div class="timeline-body">
         <div class="spread">
           <div>
-            <div style="font-weight:600;">${esc(sub?sub.name:'Unknown')} <span class="page-sub" style="font-weight:500;">${esc(sub?sub.code:'')}</span></div>
-            <div class="page-sub" style="margin-top:2px;">${esc(c.room||'—')} · ${esc(c.teacher||'—')} · ${esc(c.type||'Theory')}</div>
+            <div style="font-weight:600;">${esc(sub?sub.name:'Unknown')}</div>
+            <div class="page-sub" style="margin-top:2px;">${esc(c.room||'—')} · ${esc(c.teacher||'—')}</div>
           </div>
           <span class="badge ${st==='live'?'badge-accent':st==='completed'?'badge-neutral':'badge-info'}">${st==='live'?'LIVE':st==='completed'?'Completed':'Upcoming'}</span>
         </div>
       </div>
     </div>`;
-  }).join('')}</div></div>`;
+  }).join('')}</div>
+  <div class="field-hint" style="margin-top:8px;">${list.length} class${list.length===1?'':'es'} scheduled today</div>`;
 }
 
 function renderPriorities(){
@@ -1124,50 +1258,64 @@ function renderPriorities(){
   const dueToday = state.tasks.filter(taskIsToday);
   const high = state.tasks.filter(t=>t.status!=='Completed' && t.priority==='High' && !taskIsOverdue(t) && !taskIsToday(t));
   const list = [...overdue, ...dueToday, ...high].slice(0,6);
-  if(list.length===0) return `<div class="card empty">${icon('tasks','icon-lg')}<div class="empty-title">Nothing pending</div></div>`;
-  return `<div class="card" style="padding:6px var(--sp-5);">${list.map(t=>taskRow(t,true)).join('')}</div>`;
+  if(list.length===0) return `<div class="empty" style="padding:24px 0;">${icon('tasks','icon-lg')}<div class="empty-title">Nothing pending</div></div>`;
+  return list.map(t=>taskRow(t,true)).join('');
 }
 
-function renderAttendanceHealthMini(overall){
-  if(overall.total===0) return `<div class="empty" style="padding:12px 0;"><div class="empty-sub">Not recorded yet.</div></div>`;
-  const target = state.profile.target;
-  const status = attendanceStatusLabel(overall.pct, target);
-  const weak = activeSubjects().map(s=>({s, st:subjectAttendance(s.id)})).filter(x=>x.st.total>0 && x.st.pct < target).sort((a,b)=>a.st.pct-b.st.pct).slice(0,3);
-  return `
-    <div class="spread" style="margin-bottom:10px;">
-      <div class="stat-num" style="font-size:26px;">${overall.pct.toFixed(1)}%</div>
-      <span class="badge badge-${status.tone}">${status.label}</span>
-    </div>
-    <div class="page-sub" style="margin-bottom:10px;">${overall.present} / ${overall.total} classes · target ${target}%</div>
-    <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:${clamp(overall.pct,0,100)}%;background:${status.tone==='danger'?'var(--danger)':status.tone==='warning'?'var(--warning)':'var(--success)'};"></div></div>
-    ${weak.length ? `<div class="field-hint" style="margin-bottom:6px;font-weight:600;color:var(--text-2);">Needs attention</div>${weak.map(w=>`<div class="spread" style="padding:5px 0;font-size:12.5px;"><span>${esc(w.s.name)}</span><span style="color:var(--warning);font-weight:600;">${w.st.pct.toFixed(1)}%</span></div>`).join('') }` : ''}
-  `;
+function renderAttendanceBreakdownMini(){
+  const subs = activeSubjects();
+  if(subs.length===0) return `<div class="empty" style="padding:20px 0;">${icon('attendance','icon-lg')}<div class="empty-title">No subjects yet</div></div>`;
+  return subs.map(s=>{
+    const att = subjectAttendance(s.id);
+    const pct = att.pct===null ? 0 : att.pct;
+    return `<div class="spread" style="padding:9px 0;gap:14px;">
+      <span style="font-size:13px;font-weight:600;width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(s.name)}</span>
+      <div class="progress-track" style="flex:1;"><div class="progress-fill" style="width:${clamp(pct,0,100)}%;"></div></div>
+      <span class="field-hint" style="width:80px;text-align:right;flex-shrink:0;">${att.pct===null?'—':att.pct.toFixed(1)+'%'} ${att.total?`(${att.present}/${att.total})`:''}</span>
+    </div>`;
+  }).join('');
 }
 
 function renderUpcomingExamMini(){
   const upcoming = state.exams.filter(e=>e.date>=todayISO()).sort((a,b)=>a.date.localeCompare(b.date));
-  if(upcoming.length===0) return `<div class="empty" style="padding:8px 0;"><div class="empty-sub">No upcoming exams.</div></div>`;
+  if(upcoming.length===0) return `<div class="empty" style="padding:20px 0;">${icon('exams','icon-lg')}<div class="empty-title">No upcoming exams</div></div>`;
   const e = upcoming[0]; const sub = getSubject(e.subjectId); const d = daysBetween(e.date);
   return `
-    <div class="eyebrow" style="margin-bottom:4px;">${esc(sub?sub.name:'')}</div>
-    <div style="font-weight:650;font-size:15px;margin-bottom:6px;">${d<=0?'Today':d+' day'+(d===1?'':'s')+' remaining'}</div>
-    <div class="page-sub">${fmtDateShort(e.date)}${e.time?' · '+fmtTime(e.time):''}</div>
+    <div style="font-weight:700;font-size:15px;">${esc(sub?sub.name:'')}</div>
+    <div class="page-sub" style="margin-bottom:12px;">${fmtDateShort(e.date)}${e.time?' · '+fmtTime(e.time):''}</div>
+    <div class="stat-num" style="font-size:26px;">${d<=0?'Today':d}</div>
+    <div class="field-hint" style="margin-bottom:12px;">${d<=0?'':'Days left'}</div>
+    <div class="spread" style="margin-bottom:6px;"><span class="field-hint">Preparation</span><span style="font-weight:650;font-size:12.5px;">${e.prep||0}%</span></div>
+    <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:${e.prep||0}%;"></div></div>
+    <a href="#exams" class="btn btn-secondary btn-block">View Exam Details</a>
   `;
 }
 
-function renderWeeklyProgressMini(){
+function renderWeeklyProgressMini(days7, studyByDay){
   const {start,end} = weekRange();
   const sess = sessionsInRange(start,end);
-  const hrs = (studyMinutes(sess)/60).toFixed(1);
+  const hrs = (studyMinutes(sess)/60);
+  const tasksDoneList = days7.map(d=>state.tasks.filter(t=>t.status==='Completed' && t.dueDate===d).length);
   const tasksDone = state.tasks.filter(t=>t.status==='Completed' && t.dueDate>=start && t.dueDate<=end).length;
+  const totalDue = state.tasks.filter(t=>t.dueDate>=start && t.dueDate<=end).length;
+  const classesByDay = days7.map(d=>state.attendance.filter(a=>a.status==='present' && a.date===d).length);
   const classesAttended = state.attendance.filter(a=>a.status==='present' && a.date>=start && a.date<=end).length;
-  const rows = [
-    ['Study hours', hrs+'h'],
-    ['Tasks completed', tasksDone],
-    ['Classes attended', classesAttended],
-    ['Focus sessions', sess.length],
+  const totalConducted = state.attendance.filter(a=>a.date>=start && a.date<=end).length;
+  const focusByDay = days7.map(d=>state.sessions.filter(s=>s.date===d).length);
+
+  const cells = [
+    { label:'Study Hours', value:hrs.toFixed(1)+'h', sub:`+${hrs.toFixed(1)}h this week`, data:studyByDay, color:'var(--success)' },
+    { label:'Tasks Completed', value:tasksDone, sub: totalDue? Math.round(tasksDone/totalDue*100)+'% of total' : 'No tasks due', data:tasksDoneList, color:'var(--info)' },
+    { label:'Classes Attended', value: totalConducted? `${classesAttended} / ${totalConducted}` : '—', sub: totalConducted? Math.round(classesAttended/totalConducted*100)+'%' : 'Not recorded', data:classesByDay, color:'var(--success)' },
+    { label:'Focus Sessions', value: sess.length, sub:`+${sess.length} sessions`, data:focusByDay, color:'var(--accent)' },
   ];
-  return rows.map(([l,v])=>`<div class="spread" style="padding:6px 0;"><span class="page-sub">${l}</span><span style="font-weight:650;">${v}</span></div>`).join('');
+  return `<div class="mini-stat-grid">${cells.map(c=>`
+    <div class="mini-stat-cell">
+      <div class="field-hint" style="margin-bottom:6px;">${c.label}</div>
+      <div style="font-size:19px;font-weight:700;margin-bottom:4px;">${c.value}</div>
+      <div class="field-hint" style="margin-bottom:6px;">${c.sub}</div>
+      ${sparkline(c.data, c.color, 64, 22)}
+    </div>`).join('')}</div>`;
 }
 
 /* ==================================================================================
@@ -2135,6 +2283,8 @@ document.addEventListener('click', (e)=>{
   const action = t.dataset.action, id = t.dataset.id;
   switch(action){
     case 'theme-toggle': cycleTheme(); break;
+    case 'nav-settings': location.hash = 'settings'; break;
+    case 'nav-tasks': location.hash = 'tasks'; break;
     case 'open-more': toggleMoreSheet(); break;
     case 'close-more': closeMoreSheet(); break;
     case 'modal-close': closeModal(); break;
