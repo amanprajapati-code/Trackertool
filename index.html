@@ -2404,6 +2404,7 @@ document.addEventListener('submit', async (e)=>{
         if(error) throw new Error(error.message);
       }
       hideAuthGate();
+      booted = true;
       await bootApp();
     }catch(err){
       if(errEl){ errEl.textContent = err.message; errEl.style.display='block'; }
@@ -2488,7 +2489,10 @@ function authRequired(){
 /* ==================================================================================
    BOOTSTRAP
    ================================================================================== */
+let batchSeedInProgress = false;
 async function ensureBatchSeed(){
+  if(batchSeedInProgress) return;
+  batchSeedInProgress = true;
   try{
     if(state.subjects.length > 0) return; // already have data -- never re-seed automatically
 
@@ -2522,6 +2526,8 @@ async function ensureBatchSeed(){
   }catch(e){
     console.error('batch seed failed:', e);
     // non-fatal -- the app still works, just without auto-filled timetable
+  } finally {
+    batchSeedInProgress = false;
   }
 }
 
