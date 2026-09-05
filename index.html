@@ -2382,6 +2382,7 @@ document.addEventListener('submit', async (e)=>{
     const submitBtn = e.target.querySelector('button[type="submit"]');
     if(errEl){ errEl.style.display='none'; errEl.style.color='var(--danger)'; }
     if(submitBtn) submitBtn.disabled = true;
+    booted = true; // set BEFORE any auth call so a concurrent onAuthStateChange->tryBoot() can never race ahead of us
     try{
       if(authMode==='signup'){
         if(String(data.password||'').length < 6) throw new Error('Password must be at least 6 characters');
@@ -2391,6 +2392,7 @@ document.addEventListener('submit', async (e)=>{
         });
         if(error) throw new Error(error.message);
         if(!signData.session){
+          booted = false;
           if(errEl){
             errEl.style.color='var(--success)';
             errEl.textContent = 'Account created — check your email to confirm, then log in.';
@@ -2404,9 +2406,9 @@ document.addEventListener('submit', async (e)=>{
         if(error) throw new Error(error.message);
       }
       hideAuthGate();
-      booted = true;
       await bootApp();
     }catch(err){
+      booted = false;
       if(errEl){ errEl.textContent = err.message; errEl.style.display='block'; }
     }finally{
       if(submitBtn) submitBtn.disabled = false;
@@ -2505,21 +2507,31 @@ async function ensureBatchSeed(){
     if(masterSubjects && masterSubjects.length){
       const idMap = {};
       for(const ms of masterSubjects){
-        const created = await createEntity('subjects', state.subjects, {
-          name: ms.name, code: ms.code, teacher: ms.teacher, room: ms.room,
-          type: ms.type, credits: ms.credits, target: ms.target, archived:false
-        });
-        idMap[ms.id] = created.id;
+        try{
+          const created = await createEntity('subjects', state.subjects, {
+            name: ms.name, code: ms.code, teacher: ms.teacher, room: ms.room,
+            type: ms.type, credits: ms.credits, target: ms.target, archived:false
+          });
+          idMap[ms.id] = created.id;
+        }catch(e){
+          // already exists (e.g. a concurrent seed got there first) -- reuse the existing one instead of failing
+          const existing = state.subjects.find(s=>s.code===ms.code);
+          if(existing) idMap[ms.id] = existing.id;
+        }
       }
       const { data: masterClasses } = await sb.from('master_classes').select('*')
         .or(`batch.is.null,batch.eq.${batch}`);
       if(masterClasses){
         for(const mc of masterClasses){
           if(!idMap[mc.subject_id]) continue;
-          await createEntity('classes', state.classes, {
-            subjectId: idMap[mc.subject_id], day: mc.day, start: mc.start_time, end: mc.end_time,
-            room: mc.room, teacher: mc.teacher, type: mc.type, notes: mc.notes
-          });
+          try{
+            await createEntity('classes', state.classes, {
+              subjectId: idMap[mc.subject_id], day: mc.day, start: mc.start_time, end: mc.end_time,
+              room: mc.room, teacher: mc.teacher, type: mc.type, notes: mc.notes
+            });
+          }catch(e){
+            // already exists -- fine, skip
+          }
         }
       }
     }
