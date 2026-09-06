@@ -1515,8 +1515,13 @@ function renderAttendance(){
   return `
   <div class="page-head">
     <div><h1 class="page-title">Attendance</h1><p class="page-sub">Track presence, targets and projections.</p></div>
-    <button class="btn btn-secondary" data-action="open-simulator">${icon('zap','icon-sm')} Simulator</button>
+    <div class="row" style="gap:8px;">
+      <button class="btn btn-secondary" data-action="add-attendance-record">${icon('plus','icon-sm')} Add Record</button>
+      <button class="btn btn-secondary" data-action="open-simulator">${icon('zap','icon-sm')} Simulator</button>
+    </div>
   </div>
+
+  ${renderTodayAttendanceMarking()}
 
   <div class="card" style="margin-bottom:28px;">
     <div class="att-ring-wrap">
@@ -1534,6 +1539,37 @@ function renderAttendance(){
     ${subs.map(s=>renderSubjectAttendanceRow(s)).join('')}
   </div>`}
   `;
+}
+function renderTodayAttendanceMarking(){
+  const dayCode = todayDayCode();
+  const todaysClasses = dayCode ? classesForDay(dayCode) : [];
+  if(todaysClasses.length===0) return '';
+  const today = todayISO();
+  return `<div class="card" style="margin-bottom:24px;">
+    <div class="section-title" style="margin-bottom:2px;">Mark Today's Attendance</div>
+    <p class="page-sub" style="margin-bottom:14px;">${fmtDateLong(today)} · tap once, it locks for the day</p>
+    ${todaysClasses.map(c=>{
+      const sub = getSubject(c.subjectId);
+      const marked = state.attendance.find(a=>a.subjectId===c.subjectId && a.date===today);
+      return `<div class="spread" style="padding:11px 0;border-bottom:1px solid var(--border-soft);gap:10px;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:600;font-size:13.5px;">${fmtTime(c.start)} · ${esc(sub?sub.name:'Unknown subject')}</div>
+          <div class="field-hint">${esc(sub?sub.code:'')}${c.room?' · '+esc(c.room):''}</div>
+        </div>
+        ${marked ? `
+          <div class="row" style="gap:8px;">
+            <span class="badge badge-${marked.status==='present'?'success':'danger'}">${marked.status==='present'?'Present':'Absent'}</span>
+            <button class="btn btn-ghost btn-sm" data-action="undo-attendance" data-id="${marked.id}">Undo</button>
+          </div>
+        ` : `
+          <div class="row" style="gap:6px;">
+            <button class="btn btn-secondary btn-sm" data-action="mark-class-absent" data-id="${c.id}">Absent</button>
+            <button class="btn btn-primary btn-sm" data-action="mark-class-present" data-id="${c.id}">Present</button>
+          </div>
+        `}
+      </div>`;
+    }).join('')}
+  </div>`;
 }
 function ringSvg(pct, target){
   const r=38, c=2*Math.PI*r;
@@ -1567,18 +1603,60 @@ function renderSubjectAttendanceRow(s){
       </div>
     </div>
     ${att.total>0 ? `<div class="progress-track" style="margin-bottom:8px;"><div class="progress-fill" style="width:${clamp(att.pct,0,100)}%;background:${st.tone==='danger'?'var(--danger)':st.tone==='warning'?'var(--warning)':'var(--success)'};"></div></div>` : ''}
-    <div class="spread">
-      <span class="field-hint">${intelText}</span>
-      <div class="row" style="gap:6px;">
-        <button class="btn btn-secondary btn-sm" data-action="mark-absent" data-id="${s.id}">Absent</button>
-        <button class="btn btn-primary btn-sm" data-action="mark-present" data-id="${s.id}">Present</button>
-      </div>
-    </div>
+    <div class="field-hint">${intelText}</div>
   </div>`;
 }
-async function markAttendance(subjectId, status){
-  try{ await createEntity('attendance', state.attendance, { subjectId, date: todayISO(), status }); toast(status==='present'?'Marked present':'Marked absent'); route(); }
+async function markClassAttendance(classId, status){
+  const c = state.classes.find(x=>x.id===classId); if(!c) return;
+  const today = todayISO();
+  if(state.attendance.find(a=>a.subjectId===c.subjectId && a.date===today)){ toast('Already marked for today'); route(); return; }
+  try{ await createEntity('attendance', state.attendance, { subjectId:c.subjectId, date:today, status }); toast(status==='present'?'Marked present':'Marked absent'); route(); }
+  catch(e){ toast('Already marked for today'); route(); }
+}
+async function undoAttendanceRecord(id){
+  try{ await deleteEntity('attendance', state.attendance, id); toast('Undone'); route(); }
   catch(e){ toast(e.message); }
+}
+function openAttendanceRecordModal(){
+  const subs = activeSubjects();
+  if(subs.length===0){ toast('Add a subject first'); return; }
+  openModal({
+    title:'Add / edit attendance record',
+    submitLabel:'Save',
+    bodyHtml: `
+      ${fieldHtml('Subject','subjectId',{ options:subjectOptions(), required:true })}
+      ${fieldHtml('Date','date',{ type:'date', value:todayISO(), required:true })}
+      ${fieldHtml('Status','status',{ options:[{value:'present',label:'Present'},{value:'absent',label:'Absent'}], value:'present' })}
+      <div class="field-hint">Use this to back-fill attendance from before you started using this app, or to correct a mistake. If a record already exists for that subject and date, it will be updated instead of duplicated.</div>
+    `,
+    async onSubmit(data){
+      try{
+        const existing = state.attendance.find(a=>a.subjectId===data.subjectId && a.date===data.date);
+        if(existing){
+          await updateEntity('attendance', state.attendance, existing.id, { status:data.status });
+          toast('Attendance updated');
+        } else {
+          await createEntity('attendance', state.attendance, { subjectId:data.subjectId, date:data.date, status:data.status });
+          toast('Attendance recorded');
+        }
+        closeModal(); route();
+      }catch(e){ toast(e.message); }
+    }
+  });
+}
+async function autoMarkAbsentees(){
+  if(new Date().getHours() < 19) return;
+  const dayCode = todayDayCode();
+  if(!dayCode) return;
+  const today = todayISO();
+  const todaysClasses = classesForDay(dayCode);
+  let changed = false;
+  for(const c of todaysClasses){
+    if(state.attendance.find(a=>a.subjectId===c.subjectId && a.date===today)) continue;
+    try{ await createEntity('attendance', state.attendance, { subjectId:c.subjectId, date:today, status:'absent' }); changed = true; }
+    catch(e){ /* already exists or race -- ignore */ }
+  }
+  if(changed && (currentRoute==='attendance' || currentRoute==='today')) route();
 }
 function openSimulator(){
   const subs = activeSubjects();
@@ -2310,8 +2388,10 @@ document.addEventListener('click', (e)=>{
     case 'archive-subject': (async ()=>{ try{ await updateEntity('subjects', state.subjects, id, { archived:true }); toast('Subject archived'); route(); }catch(err){ toast(err.message); } })(); break;
     case 'unarchive-subject': (async ()=>{ try{ await updateEntity('subjects', state.subjects, id, { archived:false }); toast('Subject restored'); route(); }catch(err){ toast(err.message); } })(); break;
 
-    case 'mark-present': markAttendance(id,'present'); break;
-    case 'mark-absent': markAttendance(id,'absent'); break;
+    case 'mark-class-present': markClassAttendance(id,'present'); break;
+    case 'mark-class-absent': markClassAttendance(id,'absent'); break;
+    case 'undo-attendance': if(confirm('Undo this attendance mark?')) undoAttendanceRecord(id); break;
+    case 'add-attendance-record': openAttendanceRecordModal(); break;
     case 'open-simulator': openSimulator(); break;
 
     case 'add-task': openTaskModal(); break;
@@ -2556,7 +2636,8 @@ async function bootApp(){
     applyTheme();
     route();
     await ensureBatchSeed();
-    if(currentRoute==='today' || currentRoute==='timetable' || currentRoute==='subjects') route();
+    await autoMarkAbsentees();
+    if(currentRoute==='today' || currentRoute==='timetable' || currentRoute==='subjects' || currentRoute==='attendance') route();
   }catch(e){
     if(e.message === 'auth'){ authRequired(); }
     else{
@@ -2598,6 +2679,7 @@ sb.auth.onAuthStateChange((event)=>{
   if(!booted){ authMode = 'login'; showAuthGate(); }
 })();
 setInterval(()=>{ if(currentRoute==='today' || currentRoute==='timetable') route(); }, 60000);
+setInterval(()=>{ autoMarkAbsentees(); }, 10*60000);
 </script>
 </body>
 </html>
